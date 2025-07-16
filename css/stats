@@ -1,0 +1,8 @@
+#page-stats {
+  padding: 20px;
+}
+
+#pie-chart, #line-chart {
+  max-width: 400px;
+  margin: 20px auto;
+}
