@@ -1,0 +1,14 @@
+#page-settings {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#page-settings input, #page-settings select, #page-settings button {
+  padding: 10px;
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  border-radius: 5px;
+}
