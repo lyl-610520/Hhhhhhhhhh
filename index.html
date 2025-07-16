@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>恰逢其时</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#f8e1e9"> <!-- 浅色主题色，动态切换 -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/stats.css">
+  <link rel="stylesheet" href="css/wardrobe.css">
+  <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+  <!-- Canvas背景：四季树、夜空 -->
+  <canvas id="background-canvas"></canvas>
+  
+  <!-- 音乐播放器：固定导航栏上方 -->
+  <div class="music-player">
+    <svg class="music-icon" viewBox="0 0 24 24">
+      <!-- 播放/暂停SVG，动态生成 -->
+    </svg>
+    <span class="current-track">曲目一</span>
+    <button class="music-btn" data-action="play">播放</button>
+    <button class="music-btn" data-action="next">下一首</button>
+    <button class="music-btn" data-action="add">添加</button>
+    <button class="music-btn" data-action="delete">删除</button>
+  </div>
+  
+  <!-- 导航栏：固定底部，毛玻璃效果 -->
+  <nav class="navbar">
+    <a href="#home" class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <!-- 首页SVG -->
+      </svg>
+    </a>
+    <a href="#stats" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <!-- 统计SVG -->
+      </svg>
+    </a>
+    <a href="#wardrobe" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <!-- 衣柜SVG -->
+      </svg>
+    </a>
+    <a href="#settings" class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <!-- 设置SVG -->
+      </svg>
+    </a>
+  </nav>
+  
+  <!-- 页面容器 -->
+  <main id="page-container">
+    <!-- 动态加载：page-home, page-stats, page-wardrobe, page-settings -->
+  </main>
+  
+  <!-- 模态框：闹钟、打卡确认、数据清除 -->
+  <div class="modal hidden">
+    <div class="modal-content">
+      <p id="modal-text"></p>
+      <button id="modal-confirm">确认</button>
+      <button id="modal-cancel">取消</button>
+    </div>
+  </div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script>
+    // 注册Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker注册成功'))
+        .catch(err => console.error('Service Worker注册失败', err));
+    }
+  </script>
+</body>
+</html>
