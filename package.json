@@ -1,0 +1,23 @@
+{
+  "name": "just-in-time",
+  "version": "1.0.0",
+  "description": "恰逢其时 - 一个美妙的打卡与成长PWA应用",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python3 -m http.server 8080"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "workbox-window": "^7.0.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vite-plugin-pwa": "^0.17.0"
+  },
+  "keywords": ["PWA", "打卡", "习惯养成", "时间管理"],
+  "author": "Just in Time Team",
+  "license": "MIT"
+}

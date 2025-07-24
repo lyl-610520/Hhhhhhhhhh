@@ -1,83 +1,350 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>恰逢其时</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-  <meta name="theme-color" content="#f8e1e9"> <!-- 浅色主题色，动态切换 -->
-  <link rel="stylesheet" href="css/global.css">
-  <link rel="stylesheet" href="css/home.css">
-  <link rel="stylesheet" href="css/stats.css">
-  <link rel="stylesheet" href="css/wardrobe.css">
-  <link rel="stylesheet" href="css/settings.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Just in Time - 恰逢其时</title>
+    
+    <!-- PWA配置 -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Just in Time">
+    
+    <!-- 图标配置 -->
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    
+    <!-- 预加载关键字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/styles/main.css">
 </head>
 <body>
-  <!-- Canvas背景：四季树、夜空 -->
-  <canvas id="background-canvas"></canvas>
-  
-  <!-- 音乐播放器：固定导航栏上方 -->
-  <div class="music-player">
-    <svg class="music-icon" viewBox="0 0 24 24">
-      <!-- 播放/暂停SVG，动态生成 -->
-    </svg>
-    <span class="current-track">曲目一</span>
-    <button class="music-btn" data-action="play">播放</button>
-    <button class="music-btn" data-action="next">下一首</button>
-    <button class="music-btn" data-action="add">添加</button>
-    <button class="music-btn" data-action="delete">删除</button>
-  </div>
-  
-  <!-- 导航栏：固定底部，毛玻璃效果 -->
-  <nav class="navbar">
-    <a href="#home" class="nav-item active">
-      <svg class="nav-icon" viewBox="0 0 24 24">
-        <!-- 首页SVG -->
-      </svg>
-    </a>
-    <a href="#stats" class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 24 24">
-        <!-- 统计SVG -->
-      </svg>
-    </a>
-    <a href="#wardrobe" class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 24 24">
-        <!-- 衣柜SVG -->
-      </svg>
-    </a>
-    <a href="#settings" class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 24 24">
-        <!-- 设置SVG -->
-      </svg>
-    </a>
-  </nav>
-  
-  <!-- 页面容器 -->
-  <main id="page-container">
-    <!-- 动态加载：page-home, page-stats, page-wardrobe, page-settings -->
-  </main>
-  
-  <!-- 模态框：闹钟、打卡确认、数据清除 -->
-  <div class="modal hidden">
-    <div class="modal-content">
-      <p id="modal-text"></p>
-      <button id="modal-confirm">确认</button>
-      <button id="modal-cancel">取消</button>
+    <!-- 主应用容器 -->
+    <div id="app">
+        <!-- 动态背景层 -->
+        <div id="background-container">
+            <canvas id="atmosphere-canvas"></canvas>
+            <div id="dynamic-background"></div>
+            <div id="weather-effects"></div>
+        </div>
+        
+        <!-- 音乐播放器 - 固定在导航栏上方 -->
+        <div id="music-player">
+            <div class="music-controls">
+                <button id="prev-btn" class="control-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                    </svg>
+                </button>
+                <button id="play-pause-btn" class="control-btn">
+                    <svg id="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="m7 4 10 8L7 20V4z"/>
+                    </svg>
+                    <svg id="pause-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                    </svg>
+                </button>
+                <button id="next-btn" class="control-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                    </svg>
+                </button>
+                <button id="add-music-btn" class="control-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="music-info">
+                <span id="current-track">曲目一</span>
+                <div class="volume-control">
+                    <input type="range" id="volume-slider" min="0" max="100" value="50">
+                </div>
+            </div>
+            <input type="file" id="music-upload" accept="audio/*" multiple style="display: none;">
+        </div>
+        
+        <!-- 主内容区域 -->
+        <main id="main-content">
+            <!-- 页面容器 -->
+            <div id="page-container">
+                <!-- 主页 -->
+                <div id="page-home" class="page active">
+                    <div class="page-content">
+                        <!-- 顶部问候区域 -->
+                        <section class="greeting-section glass-effect">
+                            <div class="time-display">
+                                <div id="current-time" class="time-text">00:00:00</div>
+                                <div id="current-date" class="date-text">2024年1月1日</div>
+                            </div>
+                            <div class="greeting-content">
+                                <h1 id="greeting-text" class="greeting-title">欢迎来到恰逢其时</h1>
+                                <p id="weather-greeting" class="weather-text">正在获取天气信息...</p>
+                            </div>
+                            <button id="alarm-btn" class="alarm-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22 5.72l-4.6-3.86-1.29 1.53 4.6 3.86L22 5.72zM7.88 3.39L6.6 1.86 2 5.71l1.29 1.53 4.59-3.85zM12.5 8H11v6l4.75 2.85.75-1.23-4-2.37V8zM12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                                </svg>
+                            </button>
+                        </section>
+                        
+                        <!-- 快捷打卡区域 -->
+                        <section class="quick-checkin glass-effect">
+                            <h2 class="section-title">快捷打卡</h2>
+                            <div class="quick-buttons">
+                                <button id="wake-up-btn" class="quick-btn wake-btn">
+                                    <span class="btn-icon">🌅</span>
+                                    <span class="btn-text">我起床啦</span>
+                                </button>
+                                <button id="sleep-btn" class="quick-btn sleep-btn">
+                                    <span class="btn-icon">🌙</span>
+                                    <span class="btn-text">我要睡了</span>
+                                </button>
+                            </div>
+                        </section>
+                        
+                        <!-- 自定义打卡区域 -->
+                        <section class="custom-checkin glass-effect">
+                            <h2 class="section-title">自定义打卡</h2>
+                            <div class="checkin-form">
+                                <input type="text" id="custom-task" placeholder="今天做了什么？" class="task-input">
+                                <select id="task-category" class="category-select">
+                                    <option value="life">生活</option>
+                                    <option value="study">学习</option>
+                                    <option value="work">工作</option>
+                                </select>
+                                <button id="add-task-btn" class="add-btn">添加</button>
+                            </div>
+                            <div id="today-tasks" class="tasks-list"></div>
+                        </section>
+                        
+                        <!-- 游戏化面板 -->
+                        <section class="gamification-panel">
+                            <div class="pet-container glass-effect">
+                                <h3 class="panel-title">我的伙伴</h3>
+                                <div id="pet-display" class="pet-visual">
+                                    <div class="pet-avatar">🐱</div>
+                                    <div id="pet-accessory" class="pet-accessory"></div>
+                                </div>
+                                <div id="pet-name" class="pet-name">小伙伴</div>
+                            </div>
+                            
+                            <div class="flower-container glass-effect">
+                                <h3 class="panel-title">我的花朵</h3>
+                                <div id="flower-display" class="flower-visual">
+                                    <svg id="flower-svg" width="80" height="80" viewBox="0 0 80 80">
+                                        <!-- 花朵SVG将在这里动态生成 -->
+                                    </svg>
+                                </div>
+                                <div class="flower-info">
+                                    <div id="flower-level" class="flower-level">种子</div>
+                                    <div class="progress-bar">
+                                        <div id="sunlight-progress" class="progress-fill"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- 倒计时卡片 -->
+                        <section id="countdown-section" class="countdown-section glass-effect" style="display: none;">
+                            <h3 class="section-title">重要倒计时</h3>
+                            <div id="countdown-display" class="countdown-content">
+                                <div id="countdown-name" class="countdown-name"></div>
+                                <div id="countdown-time" class="countdown-time"></div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                
+                <!-- 统计页 -->
+                <div id="page-stats" class="page">
+                    <div class="page-content">
+                        <section class="stats-header glass-effect">
+                            <h1 class="page-title">数据统计</h1>
+                        </section>
+                        
+                        <section class="chart-container glass-effect">
+                            <h2 class="chart-title">打卡类别分布</h2>
+                            <canvas id="category-chart" width="300" height="300"></canvas>
+                        </section>
+                        
+                        <section class="chart-container glass-effect">
+                            <h2 class="chart-title">最近7日睡眠时长</h2>
+                            <canvas id="sleep-chart" width="300" height="200"></canvas>
+                        </section>
+                    </div>
+                </div>
+                
+                <!-- 养成与商店页 -->
+                <div id="page-wardrobe" class="page">
+                    <div class="page-content">
+                        <section class="wardrobe-header glass-effect">
+                            <h1 class="page-title">衣柜与商店</h1>
+                            <div class="achievement-points">
+                                <span class="points-icon">⭐</span>
+                                <span id="achievement-points">0</span>
+                                <span class="points-text">成就点</span>
+                            </div>
+                        </section>
+                        
+                        <!-- 成就展示区 -->
+                        <section class="achievement-display glass-effect">
+                            <h2 class="section-title">成就花园</h2>
+                            <div id="achievement-garden" class="achievement-garden">
+                                <!-- 成就点数量对应的星星/花朵将在这里显示 -->
+                            </div>
+                            <div id="achievements-list" class="achievements-list">
+                                <!-- 成就列表将在这里动态生成 -->
+                            </div>
+                        </section>
+                        
+                        <!-- 宠物衣柜 -->
+                        <section class="pet-wardrobe glass-effect">
+                            <h2 class="section-title">宠物衣柜</h2>
+                            <div id="accessories-grid" class="accessories-grid">
+                                <!-- 配饰网格将在这里动态生成 -->
+                            </div>
+                        </section>
+                        
+                        <!-- 主题商店 -->
+                        <section class="theme-shop glass-effect">
+                            <h2 class="section-title">主题商店</h2>
+                            <div id="themes-grid" class="themes-grid">
+                                <!-- 主题网格将在这里动态生成 -->
+                            </div>
+                        </section>
+                    </div>
+                </div>
+                
+                <!-- 设置页 -->
+                <div id="page-settings" class="page">
+                    <div class="page-content">
+                        <section class="settings-header glass-effect">
+                            <h1 class="page-title">设置</h1>
+                        </section>
+                        
+                        <!-- 显示与语言设置 -->
+                        <section class="settings-group glass-effect">
+                            <h2 class="group-title">显示与语言</h2>
+                            <div class="setting-item">
+                                <label for="theme-select">主题模式</label>
+                                <select id="theme-select" class="setting-select">
+                                    <option value="auto">自动</option>
+                                    <option value="light">浅色</option>
+                                    <option value="dark">深色</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="language-select">语言</label>
+                                <select id="language-select" class="setting-select">
+                                    <option value="zh">中文</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </section>
+                        
+                        <!-- 个性化设置 -->
+                        <section class="settings-group glass-effect">
+                            <h2 class="group-title">个性化</h2>
+                            <div class="setting-item">
+                                <label for="pet-name-input">宠物名称</label>
+                                <input type="text" id="pet-name-input" placeholder="给你的伙伴起个名字" class="setting-input">
+                            </div>
+                            <div class="setting-item">
+                                <label for="weather-preference">天气偏好</label>
+                                <select id="weather-preference" class="setting-select">
+                                    <option value="all">喜欢所有天气</option>
+                                    <option value="no-rain">讨厌雨天</option>
+                                    <option value="no-snow">讨厌雪天</option>
+                                </select>
+                            </div>
+                            <div class="setting-item">
+                                <label for="sound-effects">音效</label>
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="sound-effects" checked>
+                                    <span class="toggle-slider"></span>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- 倒计时设置 -->
+                        <section class="settings-group glass-effect">
+                            <h2 class="group-title">倒计时设置</h2>
+                            <div class="setting-item">
+                                <label for="countdown-name-input">事件名称</label>
+                                <input type="text" id="countdown-name-input" placeholder="重要的日子" class="setting-input">
+                            </div>
+                            <div class="setting-item">
+                                <label for="countdown-date-input">目标日期</label>
+                                <input type="date" id="countdown-date-input" class="setting-input">
+                            </div>
+                            <button id="save-countdown-btn" class="save-btn">设置倒计时</button>
+                        </section>
+                        
+                        <!-- 智能通知 -->
+                        <section class="settings-group glass-effect">
+                            <h2 class="group-title">智能通知</h2>
+                            <div class="setting-item">
+                                <label for="notification-time">每日提醒时间</label>
+                                <input type="time" id="notification-time" value="21:00" class="setting-input">
+                            </div>
+                            <button id="request-permission-btn" class="permission-btn">申请通知权限</button>
+                        </section>
+                        
+                        <!-- 数据管理 -->
+                        <section class="settings-group glass-effect">
+                            <h2 class="group-title">数据管理</h2>
+                            <button id="export-data-btn" class="export-btn">导出数据</button>
+                            <button id="reset-data-btn" class="reset-btn">回到最初的时光</button>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 底部导航 -->
+        <nav id="bottom-nav" class="bottom-navigation glass-effect">
+            <button class="nav-item active" data-page="home">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                <span class="nav-label">主页</span>
+            </button>
+            <button class="nav-item" data-page="stats">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                </svg>
+                <span class="nav-label">统计</span>
+            </button>
+            <button class="nav-item" data-page="wardrobe">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span class="nav-label">成长</span>
+            </button>
+            <button class="nav-item" data-page="settings">
+                <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+                <span class="nav-label">设置</span>
+            </button>
+        </nav>
     </div>
-  </div>
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <script type="module" src="js/main.js"></script>
-  <script>
-    // 注册Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('Service Worker注册成功'))
-        .catch(err => console.error('Service Worker注册失败', err));
-    }
-  </script>
+    
+    <!-- 弹窗容器 -->
+    <div id="modal-container"></div>
+    
+    <!-- 音频元素 -->
+    <audio id="audio-player" preload="metadata"></audio>
+    
+    <!-- 加载脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/scripts/main.js"></script>
+    <script src="/scripts/pwa.js"></script>
 </body>
 </html>
