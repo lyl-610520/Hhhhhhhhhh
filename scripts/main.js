@@ -30,14 +30,14 @@ const CONFIG = {
         generalPoints: 5    // 普通打卡获得的阳光值
     },
     
-    // 成就配置
+    // 成就配置 - 使用国际化key
     achievements: {
-        morningBird: { threshold: 7, name: '一日之计在于晨', icon: '🌅' },
-        earlyBird: { threshold: 5, name: '早起的鸟儿', icon: '🐦' },
-        healthyLife: { threshold: 7, name: '健康作息', icon: '💪' },
-        studyMaster: { threshold: 10, name: '学习达人', icon: '📚' },
-        workHero: { threshold: 15, name: '工作英雄', icon: '💼' },
-        lifeExpert: { threshold: 20, name: '生活专家', icon: '🏠' }
+        morningBird: { threshold: 7, nameKey: 'achievements.morningBird', icon: '🌅' },
+        earlyBird: { threshold: 5, nameKey: 'achievements.earlyBird', icon: '🐦' },
+        healthyLife: { threshold: 7, nameKey: 'achievements.healthyLife', icon: '💪' },
+        studyMaster: { threshold: 10, nameKey: 'achievements.studyMaster', icon: '📚' },
+        workHero: { threshold: 15, nameKey: 'achievements.workHero', icon: '💼' },
+        lifeExpert: { threshold: 20, nameKey: 'achievements.lifeExpert', icon: '🏠' }
     },
     
     // 预设音乐列表
@@ -114,13 +114,18 @@ class AppState {
             }
             
             if (music) {
-                music.style.display = 'flex';
-                music.style.visibility = 'visible';
-                music.style.opacity = '1';
-                music.style.position = 'fixed';
-                music.style.zIndex = '998';
-                // 确保音乐播放器在所有设备都可见
-                music.style.bottom = `calc(${navHeight}px + ${Math.max(5, navHeight * 0.1)}px + var(--safe-area-bottom))`;
+                music.style.display = 'flex !important';
+                music.style.visibility = 'visible !important';
+                music.style.opacity = '1 !important';
+                music.style.position = 'fixed !important';
+                music.style.zIndex = '9998 !important';
+                music.style.left = '0 !important';
+                music.style.right = '0 !important';
+                // 确保音乐播放器在所有设备都可见，特别是iPad
+                const safeBottom = `max(${Math.max(5, navHeight * 0.1)}px, env(safe-area-inset-bottom))`;
+                music.style.bottom = `calc(${navHeight}px + ${safeBottom}) !important`;
+                
+                console.log(`音乐播放器强制显示: position=${music.style.position}, z-index=${music.style.zIndex}, bottom=${music.style.bottom}`);
             }
             
             console.log(`屏幕适配: ${vw}x${vh}, 导航栏: ${navHeight}px, 音乐播放器: ${musicHeight}px`);
@@ -417,7 +422,8 @@ class AppState {
             
             const achievement = CONFIG.achievements[achievementKey];
             const t = i18n[this.currentLanguage];
-            app.showModal(t.ui.achievementUnlocked, `🎉 ${t.ui.congratulations}${achievement.name}`, [{
+            const achievementName = this.getNestedValue(t, achievement.nameKey) || achievement.nameKey;
+            app.showModal(t.ui.achievementUnlocked, `🎉 ${t.ui.congratulations}${achievementName}`, [{
                 text: t.ui.awesome,
                 primary: true,
                 callback: () => {}
@@ -493,31 +499,33 @@ const i18n = {
             cloudy: '今天多云，就像生活有起有落，但都是美好的',
             rainy: '今天下雨了，雨天也有雨天的浪漫呢',
             rainyComfort: '虽然下雨了，但我们依然可以保持好心情',
-            snowy: '今天下雪了，雪花纷飞的日子很有诗意'
+            snowy: '今天下雪了，雪花纷飞的日子很有诗意',
+            currentWeather: '当前天气是',
+            weatherDesc: {
+                sunny: '晴朗',
+                cloudy: '多云', 
+                rainy: '雨天',
+                snowy: '雪天',
+                foggy: '雾霾'
+            }
         },
         checkin: {
-            wakeUpMessages: [
-                '早起的鸟儿有虫吃！你真棒！',
-                '新的一天开始了，加油！',
-                '晨光中醒来的你，闪闪发光',
-                '早安！愿你今天充满活力'
-            ],
-            sleepMessages: [
-                '晚安！愿你有个甜美的梦',
-                '今天辛苦了，好好休息',
-                '夜晚来临，是时候充电了',
-                '睡个好觉，明天会更美好'
-            ],
-            lateWakeUp: [
-                '虽然起得有点晚，但还是很棒！',
-                '每一天的开始都值得庆祝',
-                '慢慢来，生活不用太着急'
-            ],
-            earlyWakeUp: [
-                '哇！你起得真早，太厉害了！',
-                '早起的你真是太棒了！',
-                '晨光中的你最美丽'
-            ]
+            wakeUpMessages: {
+                veryEarly: ['哇！凌晨起床？你是超人吗？', '这么早起来，是要征服世界吗？', '夜猫子还是早起鸟？你让我困惑了！'],
+                early: ['早起的鸟儿有虫吃！你真棒！', '晨光中醒来的你，闪闪发光', '哇！你起得真早，太厉害了！'],
+                normal: ['新的一天开始了，加油！', '早安！愿你今天充满活力', '美好的早晨，从现在开始'],
+                late: ['虽然起得有点晚，但还是很棒！', '慢慢来，生活不用太着急', '迟到的美好也是美好'],
+                veryLate: ['中午好！太阳都晒屁股啦！', '午安！看来昨晚睡得很香呢', '起床困难户？我懂的～'],
+                afternoon: ['下午起床？昨晚熬夜了吧！', '下午好！这算是起床还是午觉呢？', '夜猫子的下午时光～']
+            },
+            sleepMessages: {
+                veryEarly: ['这么早就睡？你是老爷爷吗？', '太阳还没下山呢！早睡早起好习惯', '早睡的好孩子，点个赞！'],
+                early: ['晚安！愿你有个甜美的梦', '早睡早起身体好！', '好习惯值得表扬！'],
+                normal: ['今天辛苦了，好好休息', '夜晚来临，是时候充电了', '睡个好觉，明天会更美好'],
+                late: ['夜深了，该休息了哦', '熬夜对身体不好呢', '明天要早点睡哦'],
+                veryLate: ['深夜了！赶紧睡觉！', '夜猫子，该睡了！', '这个点睡觉，明天起得来吗？'],
+                dawn: ['天都亮了才睡？你是吸血鬼吗？', '通宵达旦？注意身体哦！', '看日出后睡觉，很浪漫呢～']
+            }
         },
         ui: {
             quickCheckin: '快捷打卡',
@@ -623,7 +631,10 @@ const i18n = {
             petGreetings: {
                 morning: ['早上好呀！今天要加油哦！', '新的一天开始了！', '早安，我的朋友！'],
                 evening: ['晚上好！今天过得怎么样？', '夜晚来临了~', '晚安，好梦！']
-            }
+            },
+            petWelcome: '点击我陪你聊天！',
+            myCompanion: '我的伙伴',
+            myFlower: '我的花朵'
         }
     },
     en: {
@@ -665,31 +676,33 @@ const i18n = {
             cloudy: 'It\'s cloudy today, just like life has ups and downs, but they\'re all beautiful',
             rainy: 'It\'s raining today, rainy days have their own romance',
             rainyComfort: 'Although it\'s raining, we can still stay in a good mood',
-            snowy: 'It\'s snowing today, snowy days are very poetic'
+            snowy: 'It\'s snowing today, snowy days are very poetic',
+            currentWeather: 'Current weather is',
+            weatherDesc: {
+                sunny: 'sunny',
+                cloudy: 'cloudy',
+                rainy: 'rainy', 
+                snowy: 'snowy',
+                foggy: 'foggy'
+            }
         },
         checkin: {
-            wakeUpMessages: [
-                'The early bird catches the worm! You\'re amazing!',
-                'A new day begins, keep it up!',
-                'You waking up in the morning light, shining bright',
-                'Good morning! May you be full of energy today'
-            ],
-            sleepMessages: [
-                'Good night! May you have sweet dreams',
-                'You worked hard today, rest well',
-                'Night comes, time to recharge',
-                'Sleep well, tomorrow will be better'
-            ],
-            lateWakeUp: [
-                'Although you got up a bit late, you\'re still great!',
-                'Every day\'s beginning is worth celebrating',
-                'Take your time, life doesn\'t need to be rushed'
-            ],
-            earlyWakeUp: [
-                'Wow! You got up really early, amazing!',
-                'You getting up early is fantastic!',
-                'You\'re most beautiful in the morning light'
-            ]
+            wakeUpMessages: {
+                veryEarly: ['Wow! Up at dawn? Are you superhuman?', 'So early! Are you conquering the world?', 'Night owl or early bird? You confuse me!'],
+                early: ['The early bird catches the worm! Amazing!', 'You shining in the morning light!', 'Wow! So early, you\'re fantastic!'],
+                normal: ['A new day begins, let\'s go!', 'Good morning! May you be energetic today', 'Beautiful morning starts now'],
+                late: ['A bit late but still wonderful!', 'Take your time, no need to rush', 'Late beauty is still beauty'],
+                veryLate: ['Good noon! The sun is high up!', 'Good afternoon! Slept well last night?', 'Sleepyhead? I understand~'],
+                afternoon: ['Afternoon wake-up? Late night yesterday?', 'Good afternoon! Wake up or nap?', 'Night owl\'s afternoon time~']
+            },
+            sleepMessages: {
+                veryEarly: ['So early to sleep? Are you a grandpa?', 'Sun\'s still up! Good habit though', 'Early sleeper gets a thumbs up!'],
+                early: ['Good night! Sweet dreams ahead', 'Early to bed, early to rise!', 'Good habits deserve praise!'],
+                normal: ['You worked hard today, rest well', 'Night comes, time to recharge', 'Sleep well, tomorrow will be better'],
+                late: ['It\'s late, time to rest', 'Late nights aren\'t good for health', 'Sleep earlier tomorrow, okay?'],
+                veryLate: ['It\'s really late! Go to sleep!', 'Night owl, time to rest!', 'Can you wake up tomorrow after this?'],
+                dawn: ['Sleeping at dawn? Are you a vampire?', 'All-nighter? Take care of yourself!', 'Sleeping after sunrise, how romantic~']
+            }
         },
         ui: {
             quickCheckin: 'Quick Check-in',
@@ -795,7 +808,10 @@ const i18n = {
             petGreetings: {
                 morning: ['Good morning! Let\'s have a great day!', 'A new day begins!', 'Morning, my friend!'],
                 evening: ['Good evening! How was your day?', 'Night is coming~', 'Good night, sweet dreams!']
-            }
+            },
+            petWelcome: 'Click me to chat!',
+            myCompanion: 'My Companion',
+            myFlower: 'My Flower'
         }
     }
 };
@@ -1506,9 +1522,6 @@ class JustInTimeApp {
         
         // 更新花朵等级显示
         this.updateFlowerDisplay();
-        
-        // 更新最近打卡记录
-        this.updateRecentCheckins();
             
             // 更新主题商店等动态内容
             if (this.currentPage === 'wardrobe') {
@@ -1527,42 +1540,7 @@ class JustInTimeApp {
         }, obj);
     }
     
-    // 更新最近打卡记录
-    updateRecentCheckins() {
-        const checkins = appState.get('checkins') || [];
-        const recentCheckins = checkins.slice(-3).reverse(); // 最近3条，倒序显示
-        const container = document.getElementById('recent-checkins-list');
-        const viewAllBtn = document.getElementById('view-all-checkins');
-        
-        if (!container) return;
-        
-        if (recentCheckins.length === 0) {
-            const t = i18n[this.currentLanguage];
-            container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: var(--spacing-md);">${t.ui.noCheckins}</div>`;
-            if (viewAllBtn) viewAllBtn.style.display = 'none';
-            return;
-        }
-        
-        container.innerHTML = recentCheckins.map(checkin => {
-            const time = new Date(checkin.timestamp);
-            const timeStr = time.toLocaleTimeString(this.currentLanguage === 'zh' ? 'zh-CN' : 'en-US', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            
-            return `
-                <div class="checkin-item-compact">
-                    <span class="checkin-task">${checkin.task}</span>
-                    <span class="checkin-time">${timeStr}</span>
-                </div>
-            `;
-        }).join('');
-        
-        // 如果有超过3条记录，显示查看全部按钮
-        if (viewAllBtn) {
-            viewAllBtn.style.display = checkins.length > 3 ? 'block' : 'none';
-        }
-    }
+
     
     setupEventListeners() {
         // 导航事件
@@ -1777,15 +1755,26 @@ class JustInTimeApp {
         const hour = new Date().getHours();
         const messages = i18n[this.currentLanguage].checkin;
         let messageArray;
+        let timeCategory = 'normal';
         
         if (type === 'wake') {
-            if (hour <= 7) {
-                messageArray = messages.earlyWakeUp;
-            } else if (hour >= 10) {
-                messageArray = messages.lateWakeUp;
-            } else {
-                messageArray = messages.wakeUpMessages;
-            }
+            if (hour < 5) timeCategory = 'veryEarly';
+            else if (hour < 7) timeCategory = 'early';
+            else if (hour < 10) timeCategory = 'normal';
+            else if (hour < 12) timeCategory = 'late';
+            else if (hour < 15) timeCategory = 'veryLate';
+            else timeCategory = 'afternoon';
+            
+            messageArray = messages.wakeUpMessages[timeCategory];
+        } else if (type === 'sleep') {
+            if (hour < 20) timeCategory = 'veryEarly';
+            else if (hour < 22) timeCategory = 'early';
+            else if (hour < 24) timeCategory = 'normal';
+            else if (hour < 2) timeCategory = 'late';
+            else if (hour < 5) timeCategory = 'veryLate';
+            else timeCategory = 'dawn';
+            
+            messageArray = messages.sleepMessages[timeCategory];
         } else {
             messageArray = messages.sleepMessages;
         }
@@ -1957,9 +1946,10 @@ class JustInTimeApp {
         
         // 使用多语言问候语
         const greetings = i18n[this.currentLanguage]?.greetings?.[greetingKey];
+        let greeting = '';
+        
         if (greetings && greetings.length > 0) {
-            const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-            greetingEl.textContent = greeting;
+            greeting = greetings[Math.floor(Math.random() * greetings.length)];
         } else {
             // 兜底方案
             const fallbackGreetings = {
@@ -1978,8 +1968,33 @@ class JustInTimeApp {
                     night: 'Good night! Time to rest, sweet dreams!'
                 }
             };
-            greetingEl.textContent = fallbackGreetings[this.currentLanguage]?.[greetingKey] || 
-                                   fallbackGreetings['zh'][greetingKey];
+            greeting = fallbackGreetings[this.currentLanguage]?.[greetingKey] || 
+                      fallbackGreetings['zh'][greetingKey];
+        }
+        
+        // 获取天气信息
+        const weatherDisplay = this.getWeatherDisplay();
+        
+        // 显示问候语和天气
+        greetingEl.innerHTML = `
+            <div class="greeting-main">${greeting}</div>
+            ${weatherDisplay ? `<div class="weather-info">${weatherDisplay}</div>` : ''}
+        `;
+    }
+    
+    getWeatherDisplay() {
+        try {
+            // 这里可以模拟天气或从API获取
+            // 为了演示，我们随机选择一个天气
+            const weatherTypes = ['sunny', 'cloudy', 'rainy'];
+            const currentWeather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+            
+            const t = i18n[this.currentLanguage];
+            const weatherDesc = t.weather.weatherDesc[currentWeather] || currentWeather;
+            
+            return `${t.weather.currentWeather}${weatherDesc}`;
+        } catch (error) {
+            return null;
         }
     }
     
@@ -2088,44 +2103,35 @@ class JustInTimeApp {
     updateTodayTasks() {
         const tasksContainer = document.getElementById('today-tasks');
         if (!tasksContainer) {
-            console.warn('今日任务容器未找到');
             return;
         }
         
-        const today = new Date().toDateString();
+        // 获取所有打卡记录，显示最近3条
         const allCheckins = appState.get('checkins');
-        const todayCheckins = allCheckins.filter(c => c.date === today);
-        
-        console.log('更新今日任务:', {
-            today,
-            allCheckins: allCheckins.length,
-            todayCheckins: todayCheckins.length,
-            checkins: todayCheckins
-        });
+        const recentCheckins = allCheckins.slice(-3).reverse(); // 最近3条，倒序
         
         tasksContainer.innerHTML = '';
         
-        if (todayCheckins.length === 0) {
-            tasksContainer.innerHTML = '<div class="no-tasks">今天还没有打卡记录</div>';
+        if (recentCheckins.length === 0) {
+            const t = i18n[this.currentLanguage];
+            tasksContainer.innerHTML = `<div class="no-tasks">${t.ui.noCheckins}</div>`;
             return;
         }
         
-        todayCheckins.forEach(checkin => {
+        recentCheckins.forEach(checkin => {
             const taskEl = document.createElement('div');
             taskEl.className = 'task-item';
             
-            const time = new Date(checkin.timestamp).toLocaleTimeString('zh-CN', {
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            const time = new Date(checkin.timestamp).toLocaleTimeString(
+                this.currentLanguage === 'zh' ? 'zh-CN' : 'en-US', 
+                {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }
+            );
             
-            const categoryNames = {
-                life: '生活',
-                study: '学习',
-                work: '工作',
-                wake: '起床',
-                sleep: '睡觉'
-            };
+            const t = i18n[this.currentLanguage];
+            const categoryNames = t.ui.categories;
             
             taskEl.innerHTML = `
                 <div class="task-content">

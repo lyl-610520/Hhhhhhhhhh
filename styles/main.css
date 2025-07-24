@@ -556,8 +556,11 @@ input, textarea {
 .page-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
-  padding: 0;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  min-height: auto;
+  max-height: 100%;
+  overflow: visible;
 }
 
 /* ================================================
@@ -1029,11 +1032,15 @@ input, textarea {
 }
 
 .wake-btn {
-  background: linear-gradient(135deg, #f093fb, #f5576c);
+  background: linear-gradient(135deg, #E8A87C, #F5C794);
+  color: white;
+  box-shadow: 0 4px 15px rgba(232, 168, 124, 0.3);
 }
 
 .sleep-btn {
-  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  background: linear-gradient(135deg, #C5A3C0, #D4B5D4);
+  color: white;
+  box-shadow: 0 4px 15px rgba(197, 163, 192, 0.3);
 }
 
 /* 自定义打卡区域 */
@@ -1323,6 +1330,28 @@ canvas {
 #sleep-chart {
   width: 300px !important;
   height: 180px !important;
+}
+
+/* ================================================
+   问候语和天气信息样式
+   ================================================ */
+
+.greeting-main {
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-primary);
+}
+
+.weather-info {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-style: italic;
+  opacity: 0.8;
+  padding: var(--spacing-xs);
+  background: rgba(155, 181, 166, 0.1);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--secondary-color);
 }
 
 /* ================================================
@@ -1710,7 +1739,7 @@ input:checked + .toggle-slider:before {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 9999;
   background: var(--background-primary);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));

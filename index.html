@@ -122,7 +122,7 @@
                         <!-- 游戏化面板 -->
                         <section class="gamification-panel">
                             <div class="pet-container glass-effect">
-                                <h3 class="panel-title">我的伙伴</h3>
+                                <h3 class="panel-title" data-i18n="ui.myCompanion">My Companion</h3>
                                 <div id="pet-display" class="pet-visual">
                                     <div class="pet-avatar animated-pet" id="pet-avatar">
                                         <div class="pet-character">
@@ -141,16 +141,16 @@
                                             </div>
                                         </div>
                                         <div class="pet-bubble" id="pet-bubble">
-                                            <span id="pet-message">点击我陪你聊天！</span>
+                                            <span id="pet-message" data-i18n="ui.petWelcome">Click me to chat!</span>
                                         </div>
                                     </div>
                                     <div id="pet-accessory" class="pet-accessory">👑</div>
                                 </div>
-                                <div id="pet-name" class="pet-name">小喵咪</div>
+                                <div id="pet-name" class="pet-name">Companion</div>
                             </div>
                             
                             <div class="flower-container glass-effect">
-                                <h3 class="panel-title">我的花朵</h3>
+                                <h3 class="panel-title" data-i18n="ui.myFlower">My Flower</h3>
                                 <div id="flower-display" class="flower-visual">
                                     <svg id="flower-svg" width="80" height="80" viewBox="0 0 80 80">
                                         <!-- 花朵SVG将在这里动态生成 -->
@@ -174,14 +174,7 @@
                             </div>
                         </section>
                         
-                        <!-- 最近打卡记录 - 紧凑显示 -->
-                        <section class="recent-checkins glass-effect">
-                            <h3 class="section-title" data-i18n="ui.recentCheckins">Recent Check-ins</h3>
-                            <div id="recent-checkins-list" class="checkins-list-compact">
-                                <!-- 最近3条打卡记录 -->
-                            </div>
-                            <button id="view-all-checkins" class="view-all-btn" data-i18n="ui.viewAll" style="display: none;">View All</button>
-                        </section>
+
                     </div>
                 </div>
                 
