@@ -1164,7 +1164,6 @@ class JustInTimeApp {
         // 初始化各个组件
         this.musicPlayer = new MusicPlayer();
         this.weatherService = new WeatherService();
-        this.canvasRenderer = new CanvasRenderer();
         
         // 启动时间更新
         this.startTimeUpdate();
@@ -1180,6 +1179,27 @@ class JustInTimeApp {
         this.updateTodayStatus();
         this.updateCountdown();
         this.updateAchievements();
+        
+        // 设置当前页面为首页
+        this.currentPage = 'home';
+        
+        // 确保首页显示
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        const homePage = document.getElementById('page-home');
+        if (homePage) {
+            homePage.classList.add('active');
+        }
+        
+        // 确保导航栏首页高亮
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        const homeNav = document.querySelector('[data-page="home"]');
+        if (homeNav) {
+            homeNav.classList.add('active');
+        }
         
         // 设置通知
         this.setupNotifications();
@@ -2399,32 +2419,52 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM加载完成，开始初始化应用...');
     
     try {
-        // 初始化入场动画和PWA指引
-        if (window.AppIntroManager) {
-            window.introManager = new AppIntroManager();
-        }
-        
-        // 初始化动态背景
-        if (window.DynamicBackgroundRenderer) {
-            window.dynamicBg = new DynamicBackgroundRenderer('dynamic-background-canvas');
-        }
-        
-        // 初始化四季树
-        if (window.SeasonsTreeRenderer) {
-            window.seasonsTree = new SeasonsTreeRenderer('atmosphere-canvas');
-            window.seasonsTree.startAnimation();
-        }
-        
-        // 初始化花朵生成器
-        if (window.FlowerSVGGenerator) {
-            window.flowerGenerator = new FlowerSVGGenerator();
-        }
-        
-        // 初始化应用状态
+        // 先初始化核心应用
         appState = new AppState();
-        
-        // 初始化主应用
         app = new JustInTimeApp();
+        
+        console.log('核心应用初始化完成');
+        
+        // 延迟初始化附加功能，避免阻塞主要功能
+        setTimeout(() => {
+            try {
+                // 初始化入场动画和PWA指引
+                if (window.AppIntroManager) {
+                    window.introManager = new AppIntroManager();
+                }
+                
+                // 初始化花朵生成器
+                if (window.FlowerSVGGenerator) {
+                    window.flowerGenerator = new FlowerSVGGenerator();
+                }
+                
+                console.log('扩展功能初始化完成');
+            } catch (error) {
+                console.warn('扩展功能初始化失败:', error);
+            }
+        }, 500);
+        
+        // 暂时禁用Canvas组件，专注核心功能
+        /*
+        setTimeout(() => {
+            try {
+                // 初始化动态背景（可选）
+                if (window.DynamicBackgroundRenderer && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    window.dynamicBg = new DynamicBackgroundRenderer('dynamic-background-canvas');
+                }
+                
+                // 初始化四季树（可选）
+                if (window.SeasonsTreeRenderer && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    window.seasonsTree = new SeasonsTreeRenderer('atmosphere-canvas');
+                    window.seasonsTree.startAnimation();
+                }
+                
+                console.log('Canvas组件初始化完成');
+            } catch (error) {
+                console.warn('Canvas组件初始化失败:', error);
+            }
+        }, 1500);
+        */
         
         // 响应式处理
         window.addEventListener('resize', () => {
@@ -2439,8 +2479,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (window.seasonsTree) window.seasonsTree.resize();
             }, 100);
         });
-        
-        console.log('应用初始化完成');
         
     } catch (error) {
         console.error('应用初始化失败:', error);
