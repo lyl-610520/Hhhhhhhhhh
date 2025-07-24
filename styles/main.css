@@ -65,11 +65,15 @@
   --glass-blur: 20px;
   --glass-opacity: 0.7;
   
-  /* 安全区域适配 */
-  --safe-area-top: env(safe-area-inset-top);
-  --safe-area-bottom: env(safe-area-inset-bottom);
-  --safe-area-left: env(safe-area-inset-left);
-  --safe-area-right: env(safe-area-inset-right);
+  /* 安全区域适配 - 全设备兼容 */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+  
+  /* 导航栏高度变量 */
+  --nav-height: 80px;
+  --nav-height-safe: calc(80px + var(--safe-area-bottom));
   
   /* 响应式断点 */
   --breakpoint-xs: 375px;
@@ -1254,18 +1258,21 @@ input, textarea {
   color: var(--text-primary);
 }
 
+/* 统计页面样式 - 修复无限延长问题 */
 .chart-container {
-  padding: var(--spacing-xl);
+  padding: var(--spacing-md);
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   min-height: fit-content;
+  max-height: 400px; /* 限制最大高度 */
+  overflow: hidden; /* 防止内容溢出 */
 }
 
 .chart-title {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -1275,19 +1282,31 @@ input, textarea {
 .chart-wrapper {
   position: relative;
   width: 100%;
-  max-width: 350px;
-  aspect-ratio: 1;
+  max-width: 300px;
+  height: 250px; /* 固定高度 */
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 canvas {
   max-width: 100% !important;
   max-height: 100% !important;
-  width: auto !important;
-  height: auto !important;
+  width: 300px !important; /* 固定宽度 */
+  height: 200px !important; /* 固定高度 */
   object-fit: contain;
+}
+
+/* 统计页面特定canvas尺寸 */
+#category-chart {
+  width: 250px !important;
+  height: 250px !important;
+}
+
+#sleep-chart {
+  width: 300px !important;
+  height: 180px !important;
 }
 
 /* ================================================
@@ -2342,18 +2361,100 @@ body {
 }
 
 /* ================================================
-   iPad兼容性修复
+   全设备屏幕适配 - Apple生态优先
    ================================================ */
 
-/* iPad专用样式 */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-  /* 强制显示导航栏 */
+/* 通用移动设备基础样式 */
+@media screen and (max-width: 768px) {
   .bottom-navigation {
-    bottom: 0 !important;
     position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     z-index: 9999 !important;
-    min-height: 90px;
+    height: var(--nav-height-safe) !important;
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--spacing-md) + var(--safe-area-bottom));
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  #main-content {
+    height: calc(100vh - var(--nav-height-safe));
+    padding-bottom: var(--nav-height-safe);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* iPhone SE/小屏手机 (320px-374px) */
+@media screen and (max-width: 374px) {
+  .bottom-navigation {
+    height: calc(70px + var(--safe-area-bottom)) !important;
+  }
+  
+  .nav-item {
+    min-width: 50px;
+    padding: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+  }
+  
+  .nav-text {
+    display: none;
+  }
+  
+  #main-content {
+    height: calc(100vh - 70px - var(--safe-area-bottom));
+    padding-bottom: calc(70px + var(--safe-area-bottom));
+  }
+}
+
+/* iPhone标准屏幕 (375px-414px) */
+@media screen and (min-width: 375px) and (max-width: 414px) {
+  .bottom-navigation {
+    height: calc(75px + var(--safe-area-bottom)) !important;
+  }
+  
+  .nav-item {
+    min-width: 60px;
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+  
+  #main-content {
+    height: calc(100vh - 75px - var(--safe-area-bottom));
+    padding-bottom: calc(75px + var(--safe-area-bottom));
+  }
+}
+
+/* iPhone Plus/Max和大屏Android (415px-767px) */
+@media screen and (min-width: 415px) and (max-width: 767px) {
+  .bottom-navigation {
+    height: calc(80px + var(--safe-area-bottom)) !important;
+  }
+  
+  .nav-item {
+    min-width: 65px;
+    padding: var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  #main-content {
+    height: calc(100vh - 80px - var(--safe-area-bottom));
+    padding-bottom: calc(80px + var(--safe-area-bottom));
+  }
+}
+
+/* iPad竖屏 (768px-834px) */
+@media screen and (min-width: 768px) and (max-width: 834px) and (orientation: portrait) {
+  .bottom-navigation {
+    position: fixed !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+    height: calc(90px + var(--safe-area-bottom)) !important;
     padding: var(--spacing-lg);
+    padding-bottom: calc(var(--spacing-lg) + var(--safe-area-bottom));
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -2362,55 +2463,93 @@ body {
   .nav-item {
     min-width: 80px;
     padding: var(--spacing-md);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
   }
   
   #main-content {
-    height: calc(100vh - 160px);
-    padding-bottom: 160px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .page-content {
-    gap: var(--spacing-lg);
-    max-height: none;
-  }
-  
-  .gamification-panel {
-    gap: var(--spacing-md);
-    flex-direction: row;
-  }
-  
-  .pet-container,
-  .flower-container {
-    padding: var(--spacing-lg);
-  }
-  
-  /* 增大可点击区域 */
-  .quick-btn {
-    padding: var(--spacing-lg) var(--spacing-xl);
-    font-size: var(--font-size-lg);
-  }
-  
-  .animated-pet {
-    transform: scale(1.2);
+    height: calc(100vh - 90px - var(--safe-area-bottom));
+    padding-bottom: calc(90px + var(--safe-area-bottom));
   }
 }
 
-/* 通用移动设备优化 */
-@media screen and (max-width: 767px) {
+/* iPad横屏和iPad Pro (835px-1024px) */
+@media screen and (min-width: 835px) and (max-width: 1024px) {
   .bottom-navigation {
-    min-height: 75px;
+    position: fixed !important;
+    bottom: 0 !important;
+    z-index: 9999 !important;
+    height: calc(85px + var(--safe-area-bottom)) !important;
+    padding: var(--spacing-lg);
+    padding-bottom: calc(var(--spacing-lg) + var(--safe-area-bottom));
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
   
-  .gamification-panel {
-    flex-direction: column;
-    gap: var(--spacing-sm);
+  .nav-item {
+    min-width: 85px;
+    padding: var(--spacing-lg);
+    font-size: var(--font-size-md);
   }
   
-  .pet-container,
-  .flower-container {
-    padding: var(--spacing-sm);
+  #main-content {
+    height: calc(100vh - 85px - var(--safe-area-bottom));
+    padding-bottom: calc(85px + var(--safe-area-bottom));
+  }
+  
+  .page-content {
+    max-width: 800px;
+    margin: 0 auto;
+    gap: var(--spacing-lg);
+  }
+}
+
+/* iPad Pro大屏和桌面端 (1025px+) */
+@media screen and (min-width: 1025px) {
+  .bottom-navigation {
+    position: fixed !important;
+    bottom: var(--safe-area-bottom) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: 600px !important;
+    height: 80px !important;
+    border-radius: var(--radius-2xl) !important;
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-lg) !important;
+  }
+  
+  #main-content {
+    height: calc(100vh - 120px);
+    padding-bottom: 120px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .page-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+/* Apple设备专用优化 */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari专用 */
+  .bottom-navigation {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  #main-content {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* iPhone X系列及以上的安全区域 */
+  @media screen and (min-width: 375px) and (min-height: 812px) {
+    .bottom-navigation {
+      padding-bottom: calc(var(--spacing-md) + var(--safe-area-bottom)) !important;
+    }
   }
 }

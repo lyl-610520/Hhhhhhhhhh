@@ -60,9 +60,23 @@ class AppState {
         this.setupAutoSave();
     }
     
+    // 生成设备唯一标识符，确保用户数据独立
+    generateDeviceId() {
+        let deviceId = localStorage.getItem('deviceId');
+        if (!deviceId) {
+            deviceId = 'device_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('deviceId', deviceId);
+            console.log('生成新设备ID:', deviceId);
+        }
+        return deviceId;
+    }
+    
     // 加载本地存储的数据
     loadData() {
         const defaultData = {
+            // 设备标识，确保数据隔离
+            deviceId: this.generateDeviceId(),
+            
             // 用户设置
             settings: {
                 theme: CONFIG.app.defaultTheme,
@@ -1258,6 +1272,9 @@ class JustInTimeApp {
     }
     
     applyLanguage() {
+        const lang = this.currentLanguage;
+        const t = i18n[lang];
+        
         // 更新导航标签
         const navItems = document.querySelectorAll('.nav-item');
         const navLabels = ['home', 'stats', 'wardrobe', 'settings'];
@@ -1265,9 +1282,101 @@ class JustInTimeApp {
         navItems.forEach((item, index) => {
             const label = item.querySelector('.nav-label');
             if (label) {
-                label.textContent = i18n[this.currentLanguage].nav[navLabels[index]];
+                label.textContent = t.nav[navLabels[index]];
             }
         });
+        
+        // 更新按钮文本
+        const updateElement = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        };
+        
+        const updateButtonText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) {
+                const textEl = el.querySelector('.btn-text');
+                if (textEl) textEl.textContent = text;
+            }
+        };
+        
+        // 快捷打卡按钮
+        updateButtonText('wake-up-btn', t.ui.wakeUp);
+        updateButtonText('sleep-btn', t.ui.sleep);
+        updateButtonText('add-task-btn', t.ui.addTask);
+        
+        // 设置输入框placeholder
+        const updatePlaceholder = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.placeholder = text;
+        };
+        
+        updatePlaceholder('custom-task', t.ui.placeholders.customTask);
+        updatePlaceholder('pet-name-input', t.ui.placeholders.petName);
+        updatePlaceholder('event-name-input', t.ui.placeholders.eventName);
+        
+        // 更新选择框选项
+        const updateSelectOptions = (selectId, options) => {
+            const select = document.getElementById(selectId);
+            if (select && options) {
+                Array.from(select.options).forEach(option => {
+                    if (options[option.value]) {
+                        option.textContent = options[option.value];
+                    }
+                });
+            }
+        };
+        
+        updateSelectOptions('task-category', t.ui.categories);
+        
+        // 更新设置页面文本
+        const settingsTexts = {
+            'theme-label': t.ui.theme,
+            'language-label': t.ui.language,
+            'pet-name-label': t.ui.petName,
+            'weather-preference-label': t.ui.weatherPreference,
+            'sound-effects-label': t.ui.soundEffects,
+            'export-data-btn': t.ui.exportData,
+            'reset-data-btn': t.ui.backToBeginning,
+            'request-permission-btn': t.ui.requestNotificationPermission
+        };
+        
+        Object.entries(settingsTexts).forEach(([id, text]) => {
+            updateElement(id, text);
+        });
+        
+        // 更新主题选项
+        const themeOptions = {
+            'auto': t.ui.auto,
+            'light': t.ui.light,
+            'dark': t.ui.dark
+        };
+        updateSelectOptions('theme-select', themeOptions);
+        
+        // 更新语言选项
+        const languageOptions = {
+            'zh': t.ui.chinese,
+            'en': t.ui.english
+        };
+        updateSelectOptions('language-select', languageOptions);
+        
+        // 更新天气偏好选项
+        const weatherOptions = {
+            'all': t.ui.likeAllWeather,
+            'no-rain': t.ui.hateRainyDays,
+            'no-snow': t.ui.hateSnowyDays
+        };
+        updateSelectOptions('weather-preference', weatherOptions);
+        
+        // 更新花朵等级显示
+        const flowerLevel = appState.get('flower.level') || 0;
+        const flowerLevelNames = Object.values(t.ui.flowerLevels);
+        if (flowerLevelNames[flowerLevel]) {
+            updateElement('flower-level', flowerLevelNames[flowerLevel]);
+        }
+        
+        // 更新问候语
+        this.updateGreeting();
     }
     
     setupEventListeners() {
@@ -1622,7 +1731,7 @@ class JustInTimeApp {
     
     updateGreeting() {
         const hour = new Date().getHours();
-        const greetingEl = document.getElementById('greeting-text');
+        const greetingEl = document.getElementById('weather-greeting');
         
         if (!greetingEl) return;
         
@@ -1639,10 +1748,32 @@ class JustInTimeApp {
             greetingKey = 'night';
         }
         
-        const greetings = i18n[this.currentLanguage].greetings[greetingKey];
-        const greeting = greetings[Math.floor(Math.random() * greetings.length)];
-        
-        greetingEl.textContent = greeting;
+        // 使用多语言问候语
+        const greetings = i18n[this.currentLanguage]?.greetings?.[greetingKey];
+        if (greetings && greetings.length > 0) {
+            const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+            greetingEl.textContent = greeting;
+        } else {
+            // 兜底方案
+            const fallbackGreetings = {
+                'zh': {
+                    morning: '早晨好！新的一天开始了，要加油哦！',
+                    noon: '中午好！该吃午饭了，记得休息！',
+                    afternoon: '下午好！午后时光，继续努力！',
+                    evening: '傍晚好！今天过得怎么样？',
+                    night: '晚上好！该准备休息了，晚安！'
+                },
+                'en': {
+                    morning: 'Good morning! A new day begins, keep going!',
+                    noon: 'Good noon! Time for lunch, remember to rest!',
+                    afternoon: 'Good afternoon! Keep up the good work!',
+                    evening: 'Good evening! How was your day?',
+                    night: 'Good night! Time to rest, sweet dreams!'
+                }
+            };
+            greetingEl.textContent = fallbackGreetings[this.currentLanguage]?.[greetingKey] || 
+                                   fallbackGreetings['zh'][greetingKey];
+        }
     }
     
     updateFlowerDisplay() {
@@ -2612,6 +2743,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (window.seasonsTree) window.seasonsTree.resize();
             }, 100);
         });
+        
+        // 定时更新问候语（每5分钟检查一次时间段变化）
+        setInterval(() => {
+            if (window.app && window.app.updateGreeting) {
+                window.app.updateGreeting();
+            }
+        }, 5 * 60 * 1000);
+        
+        // 每小时强制更新一次问候语和天气
+        setInterval(() => {
+            if (window.app) {
+                if (window.app.updateGreeting) window.app.updateGreeting();
+                if (window.app.updateWeather) window.app.updateWeather();
+            }
+        }, 60 * 60 * 1000);
         
     } catch (error) {
         console.error('应用初始化失败:', error);
