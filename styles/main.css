@@ -670,36 +670,84 @@ input, textarea {
    动态宠物系统
    ================================================ */
 
+/* 增强的动态宠物系统 */
 .animated-pet {
   cursor: pointer;
   transition: all var(--transition-normal);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .animated-pet:hover {
-  transform: scale(1.1) rotate(5deg);
+  transform: scale(1.05);
+}
+
+.pet-character {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: petFloat 3s ease-in-out infinite;
+}
+
+.pet-base {
+  font-size: 3rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  transition: all var(--transition-normal);
+}
+
+.pet-face {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 
 .pet-eyes {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -60%);
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  font-size: 0.8rem;
+  animation: petBlink 4s infinite;
 }
 
-.eye {
-  width: 4px;
-  height: 4px;
-  background: #000;
-  border-radius: 50%;
-  animation: petBlink 4s infinite;
+.pet-expression {
+  font-size: 0.7rem;
+  transition: all var(--transition-fast);
+}
+
+.pet-sparkles {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+  font-size: 0.8rem;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.sparkle {
+  animation: sparkleFloat 2s ease-in-out infinite;
+}
+
+.sparkle:nth-child(2) { animation-delay: 0.5s; }
+.sparkle:nth-child(3) { animation-delay: 1s; }
+
+.animated-pet:hover .pet-sparkles,
+.animated-pet.excited .pet-sparkles {
+  opacity: 1;
 }
 
 .pet-bubble {
   position: absolute;
-  top: -40px;
+  top: -70px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--glass-gradient-1);
@@ -713,6 +761,9 @@ input, textarea {
   transform: translateX(-50%) translateY(10px);
   transition: all var(--transition-normal);
   pointer-events: none;
+  z-index: 10;
+  max-width: 180px;
+  text-align: center;
 }
 
 .pet-bubble::after {
@@ -721,7 +772,7 @@ input, textarea {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 6px solid transparent;
+  border: 8px solid transparent;
   border-top-color: var(--border-color);
 }
 
@@ -731,26 +782,33 @@ input, textarea {
   transform: translateX(-50%) translateY(0);
 }
 
+/* 宠物动画 */
+@keyframes petFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
 @keyframes petBlink {
-  0%, 94%, 100% {
-    transform: scaleY(1);
-  }
-  95%, 98% {
-    transform: scaleY(0.1);
-  }
+  0%, 94%, 100% { opacity: 1; }
+  95%, 98% { opacity: 0.3; }
+}
+
+@keyframes sparkleFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(180deg); }
 }
 
 @keyframes petBounce {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
 }
 
 .pet-happy {
-  animation: petBounce 0.6s ease-in-out;
+  animation: petBounce 0.8s ease-in-out;
+}
+
+.pet-excited .pet-character {
+  animation: petBounce 0.6s ease-in-out infinite;
 }
 
 /* ================================================

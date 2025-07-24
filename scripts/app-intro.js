@@ -11,8 +11,8 @@ class AppIntroManager {
         
         console.log('AppIntroManager初始化，首次访问:', this.isFirstVisit);
         
-        // 暂时强制显示入场动画用于测试
-        // this.isFirstVisit = true;
+        // 强制显示入场动画用于测试和展示
+        this.isFirstVisit = true;
         
         this.init();
     }

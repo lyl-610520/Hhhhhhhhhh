@@ -1180,6 +1180,8 @@ class JustInTimeApp {
         this.updateCountdown();
         this.updateAchievements();
         
+        console.log('所有UI更新完成');
+        
         // 设置当前页面为首页
         this.currentPage = 'home';
         
@@ -1273,6 +1275,7 @@ class JustInTimeApp {
         document.addEventListener('click', (e) => {
             if (e.target.closest('.nav-item')) {
                 const page = e.target.closest('.nav-item').dataset.page;
+                console.log('导航点击:', page);
                 this.navigateToPage(page);
             }
         });
@@ -1295,6 +1298,9 @@ class JustInTimeApp {
         document.getElementById('alarm-btn').addEventListener('click', () => {
             this.showAlarmModal();
         });
+        
+        // 宠物交互事件
+        this.setupPetInteraction();
         
         // 设置页面事件
         this.setupSettingsEvents();
@@ -1367,26 +1373,38 @@ class JustInTimeApp {
     }
     
     navigateToPage(page) {
+        console.log('navigateToPage被调用:', page, '当前页面:', this.currentPage);
+        
         if (page === this.currentPage) return;
         
         // 更新导航状态
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
         });
-        document.querySelector(`[data-page="${page}"]`).classList.add('active');
+        const targetNav = document.querySelector(`[data-page="${page}"]`);
+        if (targetNav) {
+            targetNav.classList.add('active');
+        }
         
         // 页面切换动画
         const currentPageEl = document.getElementById(`page-${this.currentPage}`);
         const nextPageEl = document.getElementById(`page-${page}`);
         
-        if (currentPageEl) {
-            currentPageEl.classList.remove('active');
-            currentPageEl.classList.add('prev');
-        }
+        console.log('切换页面:', {
+            from: this.currentPage,
+            to: page,
+            currentEl: !!currentPageEl,
+            nextEl: !!nextPageEl
+        });
         
+        // 隐藏所有页面
+        document.querySelectorAll('.page').forEach(p => {
+            p.classList.remove('active', 'prev');
+        });
+        
+        // 显示目标页面
         if (nextPageEl) {
             nextPageEl.classList.add('active');
-            nextPageEl.classList.remove('prev');
         }
         
         this.currentPage = page;
@@ -1560,11 +1578,14 @@ class JustInTimeApp {
     }
     
     async updateWeather() {
+        console.log('开始更新天气...');
         try {
             const weather = await this.weatherService.getCurrentWeather();
+            console.log('获取到天气数据:', weather);
+            
             const greetingEl = document.getElementById('weather-greeting');
             
-            if (greetingEl) {
+            if (greetingEl && weather) {
                 let weatherMessage = i18n[this.currentLanguage].weather.sunny;
                 
                 // 根据天气条件选择消息
@@ -1579,14 +1600,23 @@ class JustInTimeApp {
                     weatherMessage = i18n[this.currentLanguage].weather.cloudy;
                 }
                 
-                greetingEl.textContent = `${weather.location} ${weather.temp}°C，${weatherMessage}`;
+                const weatherText = `${weather.location} ${weather.temp}°C，${weatherMessage}`;
+                greetingEl.textContent = weatherText;
+                console.log('天气信息已更新:', weatherText);
             }
             
             // 显示天气特效
-            this.weatherService.showWeatherEffect(weather);
+            if (this.weatherService.showWeatherEffect) {
+                this.weatherService.showWeatherEffect(weather);
+            }
             
         } catch (error) {
             console.error('更新天气失败:', error);
+            // 显示默认天气信息
+            const greetingEl = document.getElementById('weather-greeting');
+            if (greetingEl) {
+                greetingEl.textContent = '今天天气不错，心情也要棒棒的！';
+            }
         }
     }
     
@@ -1719,12 +1749,28 @@ class JustInTimeApp {
     
     updateTodayTasks() {
         const tasksContainer = document.getElementById('today-tasks');
-        if (!tasksContainer) return;
+        if (!tasksContainer) {
+            console.warn('今日任务容器未找到');
+            return;
+        }
         
         const today = new Date().toDateString();
-        const todayCheckins = appState.get('checkins').filter(c => c.date === today);
+        const allCheckins = appState.get('checkins');
+        const todayCheckins = allCheckins.filter(c => c.date === today);
+        
+        console.log('更新今日任务:', {
+            today,
+            allCheckins: allCheckins.length,
+            todayCheckins: todayCheckins.length,
+            checkins: todayCheckins
+        });
         
         tasksContainer.innerHTML = '';
+        
+        if (todayCheckins.length === 0) {
+            tasksContainer.innerHTML = '<div class="no-tasks">今天还没有打卡记录</div>';
+            return;
+        }
         
         todayCheckins.forEach(checkin => {
             const taskEl = document.createElement('div');
@@ -2057,6 +2103,88 @@ class JustInTimeApp {
         this.updateAccessories();
         this.updateThemes();
         this.updateAchievements();
+    }
+    
+    setupPetInteraction() {
+        const petAvatar = document.getElementById('pet-avatar');
+        const petMessage = document.getElementById('pet-message');
+        const petExpression = document.getElementById('pet-expression');
+        
+        if (!petAvatar) return;
+        
+        const messages = [
+            '今天过得怎么样？',
+            '记得要好好休息哦！',
+            '你真棒，继续加油！',
+            '喵～陪你一起成长！',
+            '每一天都是新的开始呢！',
+            '打卡让生活更有意义！',
+            '我们一起变得更好吧！',
+            '你的努力我都看到了！',
+            '今天也要开心哦～',
+            '相信自己，你可以的！'
+        ];
+        
+        const expressions = ['😊', '😄', '🤩', '😉', '😸', '🥰', '😋'];
+        
+        let interactionCount = 0;
+        
+        petAvatar.addEventListener('click', () => {
+            // 添加动画效果
+            petAvatar.classList.add('pet-happy');
+            setTimeout(() => petAvatar.classList.remove('pet-happy'), 800);
+            
+            // 随机更换表情
+            if (petExpression) {
+                const randomExpression = expressions[Math.floor(Math.random() * expressions.length)];
+                petExpression.textContent = randomExpression;
+            }
+            
+            // 显示随机消息
+            if (petMessage) {
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                petMessage.textContent = randomMessage;
+            }
+            
+            // 显示对话泡泡
+            petAvatar.classList.add('speaking');
+            setTimeout(() => petAvatar.classList.remove('speaking'), 3000);
+            
+            // 增加互动次数，偶尔显示特殊效果
+            interactionCount++;
+            if (interactionCount % 5 === 0) {
+                petAvatar.classList.add('excited');
+                setTimeout(() => petAvatar.classList.remove('excited'), 2000);
+                
+                if (petMessage) {
+                    petMessage.textContent = '哇！我们已经互动' + interactionCount + '次了！✨';
+                }
+            }
+        });
+        
+        // 定期自动说话
+        setInterval(() => {
+            if (!petAvatar.classList.contains('speaking')) {
+                const randomChance = Math.random();
+                if (randomChance < 0.1) { // 10%概率自动说话
+                    const autoMessages = [
+                        '咕咕咕～',
+                        '今天记得打卡哦！',
+                        '我在这里陪着你～',
+                        '要不要休息一下？',
+                        '你今天很棒呢！'
+                    ];
+                    
+                    if (petMessage) {
+                        const randomMsg = autoMessages[Math.floor(Math.random() * autoMessages.length)];
+                        petMessage.textContent = randomMsg;
+                    }
+                    
+                    petAvatar.classList.add('speaking');
+                    setTimeout(() => petAvatar.classList.remove('speaking'), 2500);
+                }
+            }
+        }, 30000); // 每30秒检查一次
     }
     
     updateAccessories() {
