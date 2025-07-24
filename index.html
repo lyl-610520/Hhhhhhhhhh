@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Just in Time - 恰逢其时</title>
     
     <!-- PWA配置 -->
@@ -28,6 +28,7 @@
     <div id="app">
         <!-- 动态背景层 -->
         <div id="background-container">
+            <canvas id="dynamic-background-canvas"></canvas>
             <canvas id="atmosphere-canvas"></canvas>
             <div id="dynamic-background"></div>
             <div id="weather-effects"></div>
@@ -346,7 +347,47 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="scripts/seasons.js"></script>
     <script src="scripts/flower.js"></script>
+    <script src="scripts/dynamic-background.js"></script>
+    <script src="scripts/app-intro.js"></script>
     <script src="scripts/main.js"></script>
     <script src="scripts/pwa.js"></script>
+    
+    <script>
+        // 应用初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化入场动画和PWA指引
+            new AppIntroManager();
+            
+            // 初始化动态背景
+            if (window.DynamicBackgroundRenderer) {
+                window.dynamicBg = new DynamicBackgroundRenderer('dynamic-background-canvas');
+            }
+            
+            // 初始化四季树
+            if (window.SeasonsTreeRenderer) {
+                window.seasonsTree = new SeasonsTreeRenderer('atmosphere-canvas');
+                window.seasonsTree.startAnimation();
+            }
+            
+            // 初始化花朵生成器
+            if (window.FlowerSVGGenerator) {
+                window.flowerGenerator = new FlowerSVGGenerator();
+            }
+            
+            // 响应式处理
+            window.addEventListener('resize', () => {
+                if (window.dynamicBg) window.dynamicBg.resize();
+                if (window.seasonsTree) window.seasonsTree.resize();
+            });
+            
+            // iPad横竖屏切换优化
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => {
+                    if (window.dynamicBg) window.dynamicBg.resize();
+                    if (window.seasonsTree) window.seasonsTree.resize();
+                }, 100);
+            });
+        });
+    </script>
 </body>
 </html>
