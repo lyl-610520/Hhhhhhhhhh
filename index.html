@@ -165,13 +165,22 @@
                             </div>
                         </section>
                         
-                        <!-- 倒计时卡片 -->
+                        <!-- 倒计时卡片 - 动态显示 -->
                         <section id="countdown-section" class="countdown-section glass-effect" style="display: none;">
-                            <h3 class="section-title">重要倒计时</h3>
+                            <h3 class="section-title" data-i18n="ui.importantCountdown">Important Countdown</h3>
                             <div id="countdown-display" class="countdown-content">
                                 <div id="countdown-name" class="countdown-name"></div>
                                 <div id="countdown-time" class="countdown-time"></div>
                             </div>
+                        </section>
+                        
+                        <!-- 最近打卡记录 - 紧凑显示 -->
+                        <section class="recent-checkins glass-effect">
+                            <h3 class="section-title" data-i18n="ui.recentCheckins">Recent Check-ins</h3>
+                            <div id="recent-checkins-list" class="checkins-list-compact">
+                                <!-- 最近3条打卡记录 -->
+                            </div>
+                            <button id="view-all-checkins" class="view-all-btn" data-i18n="ui.viewAll" style="display: none;">View All</button>
                         </section>
                     </div>
                 </div>

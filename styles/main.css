@@ -3,11 +3,11 @@
    ================================================ */
 
 :root {
-  /* 颜色主题 - 浅色模式 */
-  --primary-color: #8B5FBF;
-  --secondary-color: #6366f1;
-  --accent-color: #ec4899;
-  --tertiary-color: #06b6d4;
+  /* 颜色主题 - 浅色模式 - 柔和成长色调 */
+  --primary-color: #7C84A3;
+  --secondary-color: #9BB5A6;
+  --accent-color: #E8A87C;
+  --tertiary-color: #C5A3C0;
   --background-primary: rgba(255, 255, 255, 0.85);
   --background-secondary: rgba(248, 250, 252, 0.8);
   --background-tertiary: rgba(241, 245, 249, 0.7);
@@ -1326,6 +1326,62 @@ canvas {
 }
 
 /* ================================================
+   最近打卡记录样式
+   ================================================ */
+
+.recent-checkins {
+  padding: var(--spacing-md);
+}
+
+.checkins-list-compact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  max-height: 180px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.checkin-item-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: rgba(124, 132, 163, 0.05);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--accent-color);
+}
+
+.checkin-task {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.checkin-time {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+.view-all-btn {
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: linear-gradient(135deg, var(--secondary-color), var(--tertiary-color));
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  align-self: center;
+}
+
+.view-all-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(155, 181, 166, 0.3);
+}
+
+/* ================================================
    养成与商店页样式
    ================================================ */
 
@@ -1658,7 +1714,7 @@ input:checked + .toggle-slider:before {
   background: var(--background-primary);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid rgba(124, 132, 163, 0.2);
   padding: var(--spacing-md);
   padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
   display: flex;
@@ -1666,7 +1722,7 @@ input:checked + .toggle-slider:before {
   align-items: center;
   /* 确保在iPad上显示 */
   min-height: 80px;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -4px 20px rgba(124, 132, 163, 0.15);
 }
 
 .nav-item {
@@ -1688,7 +1744,7 @@ input:checked + .toggle-slider:before {
 
 .nav-item.active {
   color: var(--primary-color);
-  background: rgba(102, 126, 234, 0.15);
+  background: rgba(124, 132, 163, 0.12);
   transform: scale(1.05);
 }
 
@@ -1700,14 +1756,14 @@ input:checked + .toggle-slider:before {
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  opacity: 0.1;
+  opacity: 0.08;
   border-radius: inherit;
   z-index: -1;
 }
 
 .nav-item:hover:not(.active) {
   color: var(--text-primary);
-  background: rgba(139, 95, 191, 0.08);
+  background: rgba(155, 181, 166, 0.06);
   transform: scale(1.02);
 }
 

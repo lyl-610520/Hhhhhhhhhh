@@ -109,12 +109,18 @@ class AppState {
                 nav.style.display = 'flex';
                 nav.style.visibility = 'visible';
                 nav.style.opacity = '1';
+                nav.style.position = 'fixed';
+                nav.style.zIndex = '9999';
             }
             
             if (music) {
                 music.style.display = 'flex';
                 music.style.visibility = 'visible';
                 music.style.opacity = '1';
+                music.style.position = 'fixed';
+                music.style.zIndex = '998';
+                // 确保音乐播放器在所有设备都可见
+                music.style.bottom = `calc(${navHeight}px + ${Math.max(5, navHeight * 0.1)}px + var(--safe-area-bottom))`;
             }
             
             console.log(`屏幕适配: ${vw}x${vh}, 导航栏: ${navHeight}px, 音乐播放器: ${musicHeight}px`);
@@ -456,11 +462,31 @@ const i18n = {
             settings: '设置'
         },
         greetings: {
-            morning: ['早安！新的一天开始了', '晨光正好，开始美好的一天吧', '早上好！愿你今天元气满满'],
-            noon: ['午安！记得吃午饭哦', '中午了，是时候休息一下了', '阳光正好，享受午后时光'],
-            afternoon: ['下午好！工作进展如何？', '午后时光，来杯茶放松一下', '下午的阳光很温暖呢'],
-            evening: ['晚上好！今天辛苦了', '夜幕降临，该放松一下了', '晚安时光即将到来'],
-            night: ['夜深了，该休息了', '安静的夜晚，适合思考', '愿你有个甜美的梦']
+            morning: [
+                '早安！新的一天开始了', '晨光正好，开始美好的一天吧', '早上好！愿你今天元气满满',
+                '朝阳升起，希望也随之而来', '清晨的空气真清新', '今天又是充满可能的一天',
+                '早起的你真棒！', '晨光中的你最美丽', '新的一天，新的开始', '早安，我的朋友！'
+            ],
+            noon: [
+                '午安！记得吃午饭哦', '中午了，是时候休息一下了', '阳光正好，享受午后时光',
+                '午餐时间到！要好好吃饭哦', '中午的阳光很温暖', '休息一下，下午更有精神',
+                '忙碌的上午辛苦了', '午后时光很惬意呢', '阳光透过窗户很美', '午间小憩很重要'
+            ],
+            afternoon: [
+                '下午好！工作进展如何？', '午后时光，来杯茶放松一下', '下午的阳光很温暖呢',
+                '午后的时光很宝贵', '下午茶时间到了', '继续加油，你很棒！', '下午的微风很舒服',
+                '工作告一段落了吗？', '下午的阳光刚刚好', '慢慢来，不用着急', '下午好！今天过得如何？'
+            ],
+            evening: [
+                '晚上好！今天辛苦了', '夜幕降临，该放松一下了', '晚安时光即将到来',
+                '夕阳西下很美丽', '今天的任务完成了吗？', '傍晚的时光很温柔', '晚风习习很舒服',
+                '今天过得充实吗？', '夜晚来临，该休息了', '星星开始闪烁了', '晚霞很美呢'
+            ],
+            night: [
+                '夜深了，该休息了', '安静的夜晚，适合思考', '愿你有个甜美的梦',
+                '月亮出来了', '夜晚的宁静很珍贵', '准备睡觉了吗？', '晚安，好梦！',
+                '今天辛苦了，好好休息', '夜深人静的时候', '星空很美丽', '夜晚适合冥想'
+            ]
         },
         weather: {
             sunny: '今天阳光明媚，心情也要像阳光一样灿烂哦！',
@@ -575,7 +601,29 @@ const i18n = {
             modalResetTitle: '确认重置',
             modalResetMessage: '确定要重置所有数据吗？此操作无法撤销。',
             buttonConfirm: '确定',
-            buttonCancel: '取消'
+            buttonCancel: '取消',
+            recentCheckins: '最近打卡',
+            viewAll: '查看全部',
+            noCheckins: '还没有打卡记录',
+            achievements: {
+                morningBird: '一日之计在于晨',
+                earlyBird: '早起的鸟儿有虫吃',
+                studyMaster: '学习达人',
+                workHero: '工作英雄',
+                lifeExpert: '生活专家',
+                healthyLife: '健康生活家'
+            },
+            flowerStages: {
+                seed: '种子',
+                sprout: '幼苗', 
+                bud: '花骨朵',
+                bloom: '盛开',
+                mature: '成熟'
+            },
+            petGreetings: {
+                morning: ['早上好呀！今天要加油哦！', '新的一天开始了！', '早安，我的朋友！'],
+                evening: ['晚上好！今天过得怎么样？', '夜晚来临了~', '晚安，好梦！']
+            }
         }
     },
     en: {
@@ -586,11 +634,31 @@ const i18n = {
             settings: 'Settings'
         },
         greetings: {
-            morning: ['Good morning! A new day begins', 'Morning light is just right, start a beautiful day', 'Good morning! May you be energetic today'],
-            noon: ['Good noon! Remember to have lunch', 'It\'s noon, time to take a break', 'The sun is just right, enjoy the afternoon'],
-            afternoon: ['Good afternoon! How\'s work going?', 'Afternoon time, have a cup of tea and relax', 'The afternoon sun is very warm'],
-            evening: ['Good evening! You worked hard today', 'Night falls, time to relax', 'Good night time is coming'],
-            night: ['It\'s late, time to rest', 'Quiet night, good for thinking', 'May you have sweet dreams']
+            morning: [
+                'Good morning! A new day begins', 'Morning light is just right, start a beautiful day', 'Good morning! May you be energetic today',
+                'The sunrise brings hope', 'Fresh morning air is wonderful', 'Today is full of possibilities',
+                'You\'re amazing for waking up early!', 'You look beautiful in the morning light', 'New day, new beginning', 'Morning, my friend!'
+            ],
+            noon: [
+                'Good noon! Remember to have lunch', 'It\'s noon, time to take a break', 'The sun is just right, enjoy the afternoon',
+                'Lunch time! Please eat well', 'The noon sun is warm', 'Take a break, you\'ll have more energy in the afternoon',
+                'Busy morning, well done!', 'Afternoon time is pleasant', 'Sunlight through the window is beautiful', 'Midday rest is important'
+            ],
+            afternoon: [
+                'Good afternoon! How\'s work going?', 'Afternoon time, have a cup of tea and relax', 'The afternoon sun is very warm',
+                'Afternoon time is precious', 'Time for afternoon tea', 'Keep going, you\'re doing great!', 'The afternoon breeze feels nice',
+                'Is work coming to an end?', 'The afternoon sun is just perfect', 'Take your time, no rush', 'Good afternoon! How has your day been?'
+            ],
+            evening: [
+                'Good evening! You worked hard today', 'Night falls, time to relax', 'Good night time is coming',
+                'The sunset is beautiful', 'Did you complete today\'s tasks?', 'Evening time is gentle', 'The evening breeze is comfortable',
+                'Was today fulfilling?', 'Night comes, time to rest', 'The stars are starting to twinkle', 'The sunset is lovely'
+            ],
+            night: [
+                'It\'s late, time to rest', 'Quiet night, good for thinking', 'May you have sweet dreams',
+                'The moon is out', 'The tranquility of night is precious', 'Ready for bed?', 'Good night, sweet dreams!',
+                'You worked hard today, rest well', 'In the quiet of the night', 'The starry sky is beautiful', 'Night is perfect for meditation'
+            ]
         },
         weather: {
             sunny: 'It\'s sunny today, your mood should be as bright as the sunshine!',
@@ -705,7 +773,29 @@ const i18n = {
             modalResetTitle: 'Confirm Reset',
             modalResetMessage: 'Are you sure you want to reset all data? This action cannot be undone.',
             buttonConfirm: 'Confirm',
-            buttonCancel: 'Cancel'
+            buttonCancel: 'Cancel',
+            recentCheckins: 'Recent Check-ins',
+            viewAll: 'View All',
+            noCheckins: 'No check-in records yet',
+            achievements: {
+                morningBird: 'Early Bird Gets the Worm',
+                earlyBird: 'Morning Person',
+                studyMaster: 'Study Master',
+                workHero: 'Work Hero',
+                lifeExpert: 'Life Expert',
+                healthyLife: 'Healthy Lifestyle'
+            },
+            flowerStages: {
+                seed: 'Seed',
+                sprout: 'Sprout',
+                bud: 'Bud', 
+                bloom: 'Bloom',
+                mature: 'Mature'
+            },
+            petGreetings: {
+                morning: ['Good morning! Let\'s have a great day!', 'A new day begins!', 'Morning, my friend!'],
+                evening: ['Good evening! How was your day?', 'Night is coming~', 'Good night, sweet dreams!']
+            }
         }
     }
 };
@@ -1408,14 +1498,17 @@ class JustInTimeApp {
                 }
             });
             
-            // 更新日期显示格式
-            this.updateDateTime();
-            
-            // 更新问候语
-            this.updateGreeting();
-            
-            // 更新花朵等级显示
-            this.updateFlowerDisplay();
+                    // 更新日期显示格式
+        this.updateDateTime();
+        
+        // 更新问候语
+        this.updateGreeting();
+        
+        // 更新花朵等级显示
+        this.updateFlowerDisplay();
+        
+        // 更新最近打卡记录
+        this.updateRecentCheckins();
             
             // 更新主题商店等动态内容
             if (this.currentPage === 'wardrobe') {
@@ -1432,6 +1525,43 @@ class JustInTimeApp {
         return path.split('.').reduce((current, key) => {
             return current && current[key] !== undefined ? current[key] : null;
         }, obj);
+    }
+    
+    // 更新最近打卡记录
+    updateRecentCheckins() {
+        const checkins = appState.get('checkins') || [];
+        const recentCheckins = checkins.slice(-3).reverse(); // 最近3条，倒序显示
+        const container = document.getElementById('recent-checkins-list');
+        const viewAllBtn = document.getElementById('view-all-checkins');
+        
+        if (!container) return;
+        
+        if (recentCheckins.length === 0) {
+            const t = i18n[this.currentLanguage];
+            container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: var(--spacing-md);">${t.ui.noCheckins}</div>`;
+            if (viewAllBtn) viewAllBtn.style.display = 'none';
+            return;
+        }
+        
+        container.innerHTML = recentCheckins.map(checkin => {
+            const time = new Date(checkin.timestamp);
+            const timeStr = time.toLocaleTimeString(this.currentLanguage === 'zh' ? 'zh-CN' : 'en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            return `
+                <div class="checkin-item-compact">
+                    <span class="checkin-task">${checkin.task}</span>
+                    <span class="checkin-time">${timeStr}</span>
+                </div>
+            `;
+        }).join('');
+        
+        // 如果有超过3条记录，显示查看全部按钮
+        if (viewAllBtn) {
+            viewAllBtn.style.display = checkins.length > 3 ? 'block' : 'none';
+        }
     }
     
     setupEventListeners() {
@@ -1508,8 +1638,21 @@ class JustInTimeApp {
         });
         
         // 音效开关
-        document.getElementById('sound-effects').addEventListener('change', (e) => {
+        const soundEffectsToggle = document.getElementById('sound-effects');
+        const soundEffectsSlider = soundEffectsToggle.parentElement;
+        
+        soundEffectsToggle.addEventListener('change', (e) => {
             appState.set('settings.soundEffects', e.target.checked);
+            console.log('音效开关:', e.target.checked);
+        });
+        
+        // 确保slider可点击
+        soundEffectsSlider.addEventListener('click', (e) => {
+            if (e.target !== soundEffectsToggle) {
+                soundEffectsToggle.checked = !soundEffectsToggle.checked;
+                appState.set('settings.soundEffects', soundEffectsToggle.checked);
+                console.log('音效开关(点击slider):', soundEffectsToggle.checked);
+            }
         });
         
         // 通知时间
@@ -2848,7 +2991,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }, 100);
         });
         
-        // 定时更新问候语（每5分钟检查一次时间段变化）
+        // 定时更新问候语（每5分钟更换一次）
         setInterval(() => {
             if (window.app && window.app.updateGreeting) {
                 window.app.updateGreeting();
