@@ -42,11 +42,11 @@ const CONFIG = {
     
     // 预设音乐列表
     defaultMusic: [
-        { name: '曲目一', path: './audio/track1.mp3' },
-        { name: '曲目二', path: './audio/track2.mp3' },
-        { name: '曲目三', path: './audio/track3.mp3' },
-        { name: '曲目四', path: './audio/track4.mp3' },
-        { name: '曲目五', path: './audio/track5.mp3' }
+        { name: 'Track 1', path: './audio/track1.mp3' },
+        { name: 'Track 2', path: './audio/track2.mp3' },
+        { name: 'Track 3', path: './audio/track3.mp3' },
+        { name: 'Track 4', path: './audio/track4.mp3' },
+        { name: 'Track 5', path: './audio/track5.mp3' }
     ]
 };
 
@@ -74,6 +74,65 @@ class AppState {
         } else {
             // 默认英文，因为应用主要面向国际用户
             return 'en';
+        }
+    }
+    
+    // 动态屏幕适配
+    setupDynamicLayout() {
+        const updateLayout = () => {
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const isLandscape = vw > vh;
+            const isMobile = vw <= 768;
+            const isTablet = vw > 768 && vw <= 1024;
+            
+            // 动态设置CSS变量
+            document.documentElement.style.setProperty('--actual-vh', `${vh * 0.01}px`);
+            
+            // 根据设备类型调整导航栏高度
+            let navHeight = 80;
+            if (vw <= 374) navHeight = 65;
+            else if (vw <= 414) navHeight = 75;
+            else if (isTablet) navHeight = 85;
+            
+            document.documentElement.style.setProperty('--nav-height-base', `${navHeight}px`);
+            
+            // 音乐播放器高度适配
+            const musicHeight = Math.max(55, Math.min(75, navHeight * 0.85));
+            document.documentElement.style.setProperty('--music-height', `${musicHeight}px`);
+            
+            // 强制显示关键元素
+            const nav = document.querySelector('.bottom-navigation');
+            const music = document.querySelector('#music-player');
+            
+            if (nav) {
+                nav.style.display = 'flex';
+                nav.style.visibility = 'visible';
+                nav.style.opacity = '1';
+            }
+            
+            if (music) {
+                music.style.display = 'flex';
+                music.style.visibility = 'visible';
+                music.style.opacity = '1';
+            }
+            
+            console.log(`屏幕适配: ${vw}x${vh}, 导航栏: ${navHeight}px, 音乐播放器: ${musicHeight}px`);
+        };
+        
+        // 初始化
+        updateLayout();
+        
+        // 监听窗口变化
+        window.addEventListener('resize', updateLayout);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateLayout, 100);
+        });
+        
+        // 使用ResizeObserver监听更精确的变化
+        if (window.ResizeObserver) {
+            const resizeObserver = new ResizeObserver(updateLayout);
+            resizeObserver.observe(document.documentElement);
         }
     }
     
@@ -273,7 +332,7 @@ class AppState {
         const morningCheckins = checkins.filter(c => {
             const checkTime = new Date(c.timestamp);
             const hour = checkTime.getHours();
-            return c.task === '我起床啦' && hour >= 6 && hour <= 9;
+            return (c.task.includes('起床') || c.task.includes('Awake') || c.task.includes('I\'m Awake')) && hour >= 6 && hour <= 9;
         });
         
         if (morningCheckins.length >= CONFIG.achievements.morningBird.threshold) {
@@ -1387,11 +1446,13 @@ class JustInTimeApp {
         
         // 快捷打卡按钮
         document.getElementById('wake-up-btn').addEventListener('click', () => {
-            this.handleQuickCheckin('我起床啦', 'wake');
+            const t = i18n[this.currentLanguage];
+            this.handleQuickCheckin(t.ui.wakeUp, 'wake');
         });
         
         document.getElementById('sleep-btn').addEventListener('click', () => {
-            this.handleQuickCheckin('我要睡了', 'sleep');
+            const t = i18n[this.currentLanguage];
+            this.handleQuickCheckin(t.ui.sleep, 'sleep');
         });
         
         // 自定义打卡
@@ -2155,8 +2216,8 @@ class JustInTimeApp {
             const dateStr = date.toDateString();
             
             const dayCheckins = checkins.filter(c => c.date === dateStr);
-            const wakeUp = dayCheckins.find(c => c.task === '我起床啦');
-            const sleep = dayCheckins.find(c => c.task === '我要睡了');
+                    const wakeUp = dayCheckins.find(c => c.task.includes('起床') || c.task.includes('Awake') || c.task.includes('I\'m Awake'));
+        const sleep = dayCheckins.find(c => c.task.includes('睡') || c.task.includes('Sleep') || c.task.includes('Going to Sleep'));
             
             let sleepDuration = 0;
             if (wakeUp && sleep) {
@@ -2401,22 +2462,25 @@ class JustInTimeApp {
     }
     
     async requestNotificationPermission() {
+        const t = i18n[this.currentLanguage];
+        
         if (!('Notification' in window)) {
-            this.showToast('您的浏览器不支持通知功能');
+            this.showToast('Browser does not support notifications');
             return;
         }
         
         if (Notification.permission === 'granted') {
-            this.showToast('通知权限已经开启');
+            this.showToast(t.messages.notificationPermissionGranted);
+            this.setupNotifications();
             return;
         }
         
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
-            this.showToast('通知权限开启成功！');
+            this.showToast(t.messages.notificationPermissionGranted);
             this.setupNotifications();
         } else {
-            this.showToast('通知权限被拒绝');
+            this.showToast(t.messages.notificationPermissionDenied);
         }
     }
     
@@ -2425,13 +2489,39 @@ class JustInTimeApp {
             return;
         }
         
-        // 每小时检查一次是否需要发送通知
-        setInterval(() => {
-            this.checkAndSendNotification();
-        }, 60 * 60 * 1000);
+        // 根据设置的时间发送每日提醒
+        const reminderTime = appState.get('settings.notificationTime') || '21:00';
+        this.scheduleNotification(reminderTime);
+    }
+    
+    scheduleNotification(time) {
+        const [hours, minutes] = time.split(':').map(Number);
+        const now = new Date();
+        const notificationTime = new Date();
+        notificationTime.setHours(hours, minutes, 0, 0);
         
-        // 立即检查一次
-        this.checkAndSendNotification();
+        // 如果今天的时间已过，设为明天
+        if (notificationTime <= now) {
+            notificationTime.setDate(notificationTime.getDate() + 1);
+        }
+        
+        const timeUntilNotification = notificationTime.getTime() - now.getTime();
+        
+        setTimeout(() => {
+            this.sendDailyReminder();
+            // 设置下一天的通知
+            this.scheduleNotification(time);
+        }, timeUntilNotification);
+    }
+    
+    sendDailyReminder() {
+        const t = i18n[this.currentLanguage];
+        if (Notification.permission === 'granted') {
+            new Notification(t.ui.toastCheckinSuccess, {
+                body: 'Time to check in! Keep up your great habits!',
+                icon: './icons/icon-192x192.png'
+            });
+        }
     }
     
     checkAndSendNotification() {
@@ -2546,27 +2636,25 @@ class JustInTimeApp {
     }
     
     showResetDataModal() {
+        const t = i18n[this.currentLanguage];
         this.showModal(
-            '回到最初的时光',
-            '你即将清除所有数据，这将让你重新开始这段美妙的旅程。此操作无法撤销，确定要继续吗？',
+            t.ui.modalResetTitle,
+            t.ui.modalResetMessage,
             [{
-                text: '我再想想',
+                text: t.ui.buttonCancel,
                 callback: () => {}
             }, {
-                text: '我明白',
+                text: t.ui.buttonConfirm,
                 primary: true,
                 callback: () => {
-                    this.showModal(
-                        '即将重生',
-                        '你即将涅槃重生，恭喜进入人生的下一个美好阶段！',
-                        [{
-                            text: '开始新的旅程',
-                            primary: true,
-                            callback: () => {
-                                appState.resetAllData();
-                            }
-                        }]
-                    );
+                    // 直接重置数据
+                    appState.resetAllData();
+                    // 显示成功消息
+                    this.showToast(t.messages.resetComplete);
+                    // 重新加载页面
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 }
             }]
         );
@@ -2687,6 +2775,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         app = new JustInTimeApp();
         
         console.log('核心应用初始化完成');
+        
+        // 自动检测并应用系统语言
+        if (!appState.get('settings.language')) {
+            const detectedLang = this.detectSystemLanguage();
+            appState.set('settings.language', detectedLang);
+            this.currentLanguage = detectedLang;
+            console.log('自动检测系统语言:', detectedLang);
+        }
+        this.applyLanguage();
+        
+        // 动态屏幕适配
+        this.setupDynamicLayout();
         
         // 快速初始化入场动画
         setTimeout(() => {

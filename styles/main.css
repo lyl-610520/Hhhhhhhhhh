@@ -72,12 +72,12 @@
   --safe-area-left: env(safe-area-inset-left, 0px);
   --safe-area-right: env(safe-area-inset-right, 0px);
   
-  /* 导航栏高度变量 - 基础高度 */
-  --nav-height-base: 80px;
+  /* 导航栏高度变量 - 动态适配 */
+  --nav-height-base: clamp(65px, 8vw, 85px);
   --nav-height-safe: calc(var(--nav-height-base) + var(--safe-area-bottom));
   
-  /* 音乐播放器高度变量 */
-  --music-height: 70px;
+  /* 音乐播放器高度变量 - 动态适配 */
+  --music-height: clamp(55px, 7vw, 75px);
   
   /* 响应式断点 */
   --breakpoint-xs: 375px;
@@ -1679,19 +1679,36 @@ input:checked + .toggle-slider:before {
   background: none;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-theme), transform 0.15s ease;
   min-width: 60px;
   border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
 }
 
 .nav-item.active {
   color: var(--primary-color);
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(102, 126, 234, 0.15);
+  transform: scale(1.05);
 }
 
-.nav-item:hover {
-  color: var(--primary-color);
-  background: rgba(102, 126, 234, 0.05);
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  opacity: 0.1;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+.nav-item:hover:not(.active) {
+  color: var(--text-primary);
+  background: rgba(139, 95, 191, 0.08);
+  transform: scale(1.02);
 }
 
 .nav-icon {
