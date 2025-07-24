@@ -351,8 +351,9 @@ class AppState {
             this.data.achievements.points += 10; // 每个成就10点
             
             const achievement = CONFIG.achievements[achievementKey];
-            app.showModal('成就解锁！', `🎉 恭喜解锁成就：${achievement.name}`, [{
-                text: '太棒了！',
+            const t = i18n[this.currentLanguage];
+            app.showModal(t.ui.achievementUnlocked, `🎉 ${t.ui.congratulations}${achievement.name}`, [{
+                text: t.ui.awesome,
                 primary: true,
                 callback: () => {}
             }]);
@@ -505,7 +506,17 @@ const i18n = {
                 notificationPermissionDenied: '通知权限被拒绝'
             },
             loading: '加载中...',
-            loadingWeather: '正在获取天气信息...'
+            loadingWeather: '正在获取天气信息...',
+            comingSoon: '主题商店即将开放！',
+            achievementUnlocked: '成就解锁！',
+            congratulations: '恭喜解锁成就：',
+            awesome: '太棒了！',
+            toastCheckinSuccess: '打卡成功！',
+            toastDuplicateCheckin: '今天已经打过这个卡了',
+            modalResetTitle: '确认重置',
+            modalResetMessage: '确定要重置所有数据吗？此操作无法撤销。',
+            buttonConfirm: '确定',
+            buttonCancel: '取消'
         }
     },
     en: {
@@ -625,7 +636,17 @@ const i18n = {
                 notificationPermissionDenied: 'Notification permission denied'
             },
             loading: 'Loading...',
-            loadingWeather: 'Getting weather information...'
+            loadingWeather: 'Getting weather information...',
+            comingSoon: 'Theme shop coming soon!',
+            achievementUnlocked: 'Achievement Unlocked!',
+            congratulations: 'Congratulations on unlocking: ',
+            awesome: 'Awesome!',
+            toastCheckinSuccess: 'Check-in successful!',
+            toastDuplicateCheckin: 'You have already checked in for this today',
+            modalResetTitle: 'Confirm Reset',
+            modalResetMessage: 'Are you sure you want to reset all data? This action cannot be undone.',
+            buttonConfirm: 'Confirm',
+            buttonCancel: 'Cancel'
         }
     }
 };
@@ -1305,32 +1326,46 @@ class JustInTimeApp {
         
         console.log('应用语言:', lang);
         
-        // 使用data-i18n属性更新所有文本
-        document.querySelectorAll('[data-i18n]').forEach(element => {
-            const key = element.getAttribute('data-i18n');
-            const text = this.getNestedValue(t, key);
-            if (text) {
-                element.textContent = text;
+        // 添加淡出效果
+        document.body.style.opacity = '0.7';
+        document.body.style.transition = 'opacity 0.2s ease';
+        
+        setTimeout(() => {
+            // 使用data-i18n属性更新所有文本
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const text = this.getNestedValue(t, key);
+                if (text) {
+                    element.textContent = text;
+                }
+            });
+            
+            // 更新placeholder
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                const text = this.getNestedValue(t, key);
+                if (text) {
+                    element.placeholder = text;
+                }
+            });
+            
+            // 更新日期显示格式
+            this.updateDateTime();
+            
+            // 更新问候语
+            this.updateGreeting();
+            
+            // 更新花朵等级显示
+            this.updateFlowerDisplay();
+            
+            // 更新主题商店等动态内容
+            if (this.currentPage === 'wardrobe') {
+                this.updateThemeShop();
             }
-        });
-        
-        // 更新placeholder
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-            const key = element.getAttribute('data-i18n-placeholder');
-            const text = this.getNestedValue(t, key);
-            if (text) {
-                element.placeholder = text;
-            }
-        });
-        
-        // 更新日期显示格式
-        this.updateDateTime();
-        
-        // 更新问候语
-        this.updateGreeting();
-        
-        // 更新花朵等级显示
-        this.updateFlowerDisplay();
+            
+            // 淡入效果
+            document.body.style.opacity = '1';
+        }, 100);
     }
     
     // 获取嵌套对象值的辅助函数
@@ -1504,8 +1539,9 @@ class JustInTimeApp {
         
         // 检查是否已经打卡
         if ((type === 'wake' && todayStatus.wakeUp) || (type === 'sleep' && todayStatus.sleep)) {
-            this.showModal('今日已打卡', '今天已经完成这项打卡了哦！', [{
-                text: '好的',
+            const t = i18n[this.currentLanguage];
+            this.showModal(t.ui.toastDuplicateCheckin, t.ui.toastDuplicateCheckin, [{
+                text: t.ui.buttonConfirm,
                 primary: true,
                 callback: () => {}
             }]);
@@ -1577,14 +1613,15 @@ class JustInTimeApp {
         );
         
         if (todayCheckins.length > 0) {
-            this.showModal('重复打卡确认', `今天已经打卡过"${task}"了，确定要再次打卡吗？`, [{
-                text: '确定',
+            const t = i18n[this.currentLanguage];
+            this.showModal(t.ui.modalResetTitle, `${t.ui.toastDuplicateCheckin} "${task}"`, [{
+                text: t.ui.buttonConfirm,
                 primary: true,
                 callback: () => {
                     this.doCustomCheckin(task, category);
                 }
             }, {
-                text: '取消',
+                text: t.ui.buttonCancel,
                 callback: () => {}
             }]);
         } else {
@@ -1607,7 +1644,8 @@ class JustInTimeApp {
         this.musicPlayer.playSound('success');
         
         // 显示成功提示
-        this.showToast('打卡成功！');
+        const t = i18n[this.currentLanguage];
+        this.showToast(t.ui.toastCheckinSuccess);
     }
     
     startTimeUpdate() {
@@ -2325,7 +2363,8 @@ class JustInTimeApp {
         if (!grid) return;
         
         // 主题功能可以在这里扩展
-        grid.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">主题商店即将开放！</p>';
+        const comingSoonText = i18n[this.currentLanguage]?.ui?.comingSoon || 'Theme shop coming soon!';
+        grid.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 2rem;">${comingSoonText}</p>`;
     }
     
     updateSettings() {

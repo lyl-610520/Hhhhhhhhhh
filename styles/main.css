@@ -60,6 +60,7 @@
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
+  --transition-theme: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   
   /* 毛玻璃效果 */
   --glass-blur: 20px;
@@ -71,9 +72,12 @@
   --safe-area-left: env(safe-area-inset-left, 0px);
   --safe-area-right: env(safe-area-inset-right, 0px);
   
-  /* 导航栏高度变量 */
-  --nav-height: 80px;
-  --nav-height-safe: calc(80px + var(--safe-area-bottom));
+  /* 导航栏高度变量 - 基础高度 */
+  --nav-height-base: 80px;
+  --nav-height-safe: calc(var(--nav-height-base) + var(--safe-area-bottom));
+  
+  /* 音乐播放器高度变量 */
+  --music-height: 70px;
   
   /* 响应式断点 */
   --breakpoint-xs: 375px;
@@ -177,6 +181,11 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* 主题切换平滑动画 */
+  transition: background-color var(--transition-theme), 
+              color var(--transition-theme), 
+              border-color var(--transition-theme),
+              box-shadow var(--transition-theme);
 }
 
 html {
@@ -405,7 +414,7 @@ input, textarea {
 
 #music-player {
   position: fixed;
-  bottom: var(--nav-height-safe);
+  bottom: calc(var(--nav-height-safe) + 5px); /* 在导航栏上方5px */
   left: var(--spacing-md);
   right: var(--spacing-md);
   z-index: 998; /* 低于导航栏 */
@@ -414,14 +423,14 @@ input, textarea {
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-sm); /* 减小padding避免重叠 */
+  padding: var(--spacing-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-sm);
   box-shadow: 0 8px 32px var(--shadow-color);
   transition: all var(--transition-normal);
-  height: 60px; /* 固定高度 */
+  height: var(--music-height);
 }
 
 .music-controls {
@@ -502,13 +511,12 @@ input, textarea {
   top: 0;
   left: 0;
   right: 0;
-  bottom: calc(var(--nav-height-safe) + 70px); /* 为音乐播放器留出空间 */
+  bottom: calc(var(--nav-height-safe) + var(--music-height) + 10px); /* 为音乐播放器和导航栏留出空间 */
   padding: var(--spacing-sm);
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   /* 防止页面整体滚动 */
-  height: calc(100vh - var(--nav-height-safe) - 70px) !important;
   width: 100vw !important;
 }
 
@@ -2368,7 +2376,7 @@ body {
   height: 100vh !important;
   width: 100vw !important;
   position: fixed !important;
-  touch-action: none; /* 防止意外滚动 */
+  touch-action: pan-y; /* 允许垂直滚动但防止意外滚动 */
 }
 
 /* ================================================
@@ -2377,6 +2385,10 @@ body {
 
 /* 通用移动设备基础样式 */
 @media screen and (max-width: 768px) {
+  :root {
+    --nav-height-base: 75px; /* 移动设备稍微矮一点 */
+  }
+  
   .bottom-navigation {
     position: fixed !important;
     bottom: 0 !important;
@@ -2391,18 +2403,18 @@ body {
     opacity: 1 !important;
   }
   
-  #main-content {
-    height: calc(100vh - var(--nav-height-safe));
-    padding-bottom: var(--nav-height-safe);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+  #music-player {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
 
 /* iPhone SE/小屏手机 (320px-374px) */
 @media screen and (max-width: 374px) {
-  .bottom-navigation {
-    height: calc(70px + var(--safe-area-bottom)) !important;
+  :root {
+    --nav-height-base: 65px; /* 小屏设备更矮 */
+    --music-height: 55px;
   }
   
   .nav-item {
@@ -2411,59 +2423,40 @@ body {
     font-size: var(--font-size-xs);
   }
   
-  .nav-text {
-    display: none;
-  }
-  
-  #main-content {
-    height: calc(100vh - 70px - var(--safe-area-bottom));
-    padding-bottom: calc(70px + var(--safe-area-bottom));
+  .nav-label {
+    display: none; /* 隐藏文字标签节省空间 */
   }
 }
 
 /* iPhone标准屏幕 (375px-414px) */
 @media screen and (min-width: 375px) and (max-width: 414px) {
-  .bottom-navigation {
-    height: calc(75px + var(--safe-area-bottom)) !important;
-  }
-  
   .nav-item {
     min-width: 60px;
     padding: var(--spacing-sm);
     font-size: var(--font-size-sm);
   }
-  
-  #main-content {
-    height: calc(100vh - 75px - var(--safe-area-bottom));
-    padding-bottom: calc(75px + var(--safe-area-bottom));
-  }
 }
 
 /* iPhone Plus/Max和大屏Android (415px-767px) */
 @media screen and (min-width: 415px) and (max-width: 767px) {
-  .bottom-navigation {
-    height: calc(80px + var(--safe-area-bottom)) !important;
-  }
-  
   .nav-item {
     min-width: 65px;
     padding: var(--spacing-md);
     font-size: var(--font-size-sm);
   }
-  
-  #main-content {
-    height: calc(100vh - 80px - var(--safe-area-bottom));
-    padding-bottom: calc(80px + var(--safe-area-bottom));
-  }
 }
 
 /* iPad竖屏 (768px-834px) */
 @media screen and (min-width: 768px) and (max-width: 834px) and (orientation: portrait) {
+  :root {
+    --nav-height-base: 85px; /* iPad稍微高一点 */
+    --music-height: 75px;
+  }
+  
   .bottom-navigation {
     position: fixed !important;
     bottom: 0 !important;
     z-index: 9999 !important;
-    height: calc(90px + var(--safe-area-bottom)) !important;
     padding: var(--spacing-lg);
     padding-bottom: calc(var(--spacing-lg) + var(--safe-area-bottom));
     display: flex !important;
@@ -2477,9 +2470,10 @@ body {
     font-size: var(--font-size-md);
   }
   
-  #main-content {
-    height: calc(100vh - 90px - var(--safe-area-bottom));
-    padding-bottom: calc(90px + var(--safe-area-bottom));
+  #music-player {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
 
