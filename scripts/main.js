@@ -60,6 +60,23 @@ class AppState {
         this.setupAutoSave();
     }
     
+    // 检测系统语言
+    detectSystemLanguage() {
+        // 检测浏览器语言
+        const systemLang = navigator.language || navigator.userLanguage || 'zh';
+        const langCode = systemLang.toLowerCase();
+        
+        // 支持的语言映射
+        if (langCode.startsWith('zh')) {
+            return 'zh'; // 中文
+        } else if (langCode.startsWith('en')) {
+            return 'en'; // 英文
+        } else {
+            // 默认英文，因为应用主要面向国际用户
+            return 'en';
+        }
+    }
+    
     // 生成设备唯一标识符，确保用户数据独立
     generateDeviceId() {
         let deviceId = localStorage.getItem('deviceId');
@@ -80,7 +97,7 @@ class AppState {
             // 用户设置
             settings: {
                 theme: CONFIG.app.defaultTheme,
-                language: CONFIG.app.defaultLanguage,
+                language: this.detectSystemLanguage(), // 自动检测系统语言
                 petName: '小伙伴',
                 weatherPreference: 'all',
                 soundEffects: true,
@@ -284,15 +301,15 @@ class AppState {
         const last7Days = [];
         const today = new Date();
         
-        // 获取最近7天的数据
+        // 获取最近7天的数据(倒序，从今天开始往前)
         for (let i = 0; i < 7; i++) {
             const date = new Date(today);
             date.setDate(date.getDate() - i);
             const dateStr = date.toDateString();
             
             const dayCheckins = checkins.filter(c => c.date === dateStr);
-            const wakeUp = dayCheckins.find(c => c.task === '我起床啦');
-            const sleep = dayCheckins.find(c => c.task === '我要睡了');
+            const wakeUp = dayCheckins.find(c => c.task.includes('起床') || c.task.includes('Awake'));
+            const sleep = dayCheckins.find(c => c.task.includes('睡') || c.task.includes('Sleep'));
             
             last7Days.push({
                 date: dateStr,
@@ -303,19 +320,26 @@ class AppState {
             });
         }
         
-        // 检查连续健康作息
+        // 检查连续健康作息(从今天开始倒推)
         let consecutiveHealthy = 0;
         for (const day of last7Days) {
-            if (day.hasWakeUp && day.hasSleep && 
-                day.wakeUpTime >= 6 && day.wakeUpTime <= 9 &&
-                day.sleepTime >= 22 || day.sleepTime <= 2) {
+            // 修复睡眠时间判断逻辑
+            const isHealthySleep = day.sleepTime !== null && 
+                                 (day.sleepTime >= 22 || day.sleepTime <= 2);
+            const isHealthyWakeUp = day.wakeUpTime !== null && 
+                                  day.wakeUpTime >= 6 && day.wakeUpTime <= 9;
+            
+            if (day.hasWakeUp && day.hasSleep && isHealthyWakeUp && isHealthySleep) {
                 consecutiveHealthy++;
             } else {
-                break;
+                break; // 中断连续计数
             }
         }
         
-        if (consecutiveHealthy >= CONFIG.achievements.healthyLife.threshold) {
+        console.log('连续健康作息天数:', consecutiveHealthy);
+        
+        // 只有真正连续7天才解锁成就
+        if (consecutiveHealthy >= 7) {
             this.unlockAchievement('healthyLife');
         }
     }
@@ -479,7 +503,9 @@ const i18n = {
                 alarmSet: '闹钟设置成功！',
                 notificationPermissionGranted: '通知权限已开启！',
                 notificationPermissionDenied: '通知权限被拒绝'
-            }
+            },
+            loading: '加载中...',
+            loadingWeather: '正在获取天气信息...'
         }
     },
     en: {
@@ -597,7 +623,9 @@ const i18n = {
                 alarmSet: 'Alarm set successfully!',
                 notificationPermissionGranted: 'Notification permission granted!',
                 notificationPermissionDenied: 'Notification permission denied'
-            }
+            },
+            loading: 'Loading...',
+            loadingWeather: 'Getting weather information...'
         }
     }
 };
@@ -1275,108 +1303,41 @@ class JustInTimeApp {
         const lang = this.currentLanguage;
         const t = i18n[lang];
         
-        // 更新导航标签
-        const navItems = document.querySelectorAll('.nav-item');
-        const navLabels = ['home', 'stats', 'wardrobe', 'settings'];
+        console.log('应用语言:', lang);
         
-        navItems.forEach((item, index) => {
-            const label = item.querySelector('.nav-label');
-            if (label) {
-                label.textContent = t.nav[navLabels[index]];
+        // 使用data-i18n属性更新所有文本
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            const text = this.getNestedValue(t, key);
+            if (text) {
+                element.textContent = text;
             }
         });
         
-        // 更新按钮文本
-        const updateElement = (id, text) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = text;
-        };
-        
-        const updateButtonText = (id, text) => {
-            const el = document.getElementById(id);
-            if (el) {
-                const textEl = el.querySelector('.btn-text');
-                if (textEl) textEl.textContent = text;
+        // 更新placeholder
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+            const key = element.getAttribute('data-i18n-placeholder');
+            const text = this.getNestedValue(t, key);
+            if (text) {
+                element.placeholder = text;
             }
-        };
-        
-        // 快捷打卡按钮
-        updateButtonText('wake-up-btn', t.ui.wakeUp);
-        updateButtonText('sleep-btn', t.ui.sleep);
-        updateButtonText('add-task-btn', t.ui.addTask);
-        
-        // 设置输入框placeholder
-        const updatePlaceholder = (id, text) => {
-            const el = document.getElementById(id);
-            if (el) el.placeholder = text;
-        };
-        
-        updatePlaceholder('custom-task', t.ui.placeholders.customTask);
-        updatePlaceholder('pet-name-input', t.ui.placeholders.petName);
-        updatePlaceholder('event-name-input', t.ui.placeholders.eventName);
-        
-        // 更新选择框选项
-        const updateSelectOptions = (selectId, options) => {
-            const select = document.getElementById(selectId);
-            if (select && options) {
-                Array.from(select.options).forEach(option => {
-                    if (options[option.value]) {
-                        option.textContent = options[option.value];
-                    }
-                });
-            }
-        };
-        
-        updateSelectOptions('task-category', t.ui.categories);
-        
-        // 更新设置页面文本
-        const settingsTexts = {
-            'theme-label': t.ui.theme,
-            'language-label': t.ui.language,
-            'pet-name-label': t.ui.petName,
-            'weather-preference-label': t.ui.weatherPreference,
-            'sound-effects-label': t.ui.soundEffects,
-            'export-data-btn': t.ui.exportData,
-            'reset-data-btn': t.ui.backToBeginning,
-            'request-permission-btn': t.ui.requestNotificationPermission
-        };
-        
-        Object.entries(settingsTexts).forEach(([id, text]) => {
-            updateElement(id, text);
         });
         
-        // 更新主题选项
-        const themeOptions = {
-            'auto': t.ui.auto,
-            'light': t.ui.light,
-            'dark': t.ui.dark
-        };
-        updateSelectOptions('theme-select', themeOptions);
-        
-        // 更新语言选项
-        const languageOptions = {
-            'zh': t.ui.chinese,
-            'en': t.ui.english
-        };
-        updateSelectOptions('language-select', languageOptions);
-        
-        // 更新天气偏好选项
-        const weatherOptions = {
-            'all': t.ui.likeAllWeather,
-            'no-rain': t.ui.hateRainyDays,
-            'no-snow': t.ui.hateSnowyDays
-        };
-        updateSelectOptions('weather-preference', weatherOptions);
-        
-        // 更新花朵等级显示
-        const flowerLevel = appState.get('flower.level') || 0;
-        const flowerLevelNames = Object.values(t.ui.flowerLevels);
-        if (flowerLevelNames[flowerLevel]) {
-            updateElement('flower-level', flowerLevelNames[flowerLevel]);
-        }
+        // 更新日期显示格式
+        this.updateDateTime();
         
         // 更新问候语
         this.updateGreeting();
+        
+        // 更新花朵等级显示
+        this.updateFlowerDisplay();
+    }
+    
+    // 获取嵌套对象值的辅助函数
+    getNestedValue(obj, path) {
+        return path.split('.').reduce((current, key) => {
+            return current && current[key] !== undefined ? current[key] : null;
+        }, obj);
     }
     
     setupEventListeners() {
@@ -1651,31 +1612,10 @@ class JustInTimeApp {
     
     startTimeUpdate() {
         const updateTime = () => {
-            const now = new Date();
-            
-            // 更新时间显示
-            const timeEl = document.getElementById('current-time');
-            const dateEl = document.getElementById('current-date');
-            
-            if (timeEl) {
-                timeEl.textContent = now.toLocaleTimeString('zh-CN', {
-                    hour12: false,
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-            }
-            
-            if (dateEl) {
-                dateEl.textContent = now.toLocaleDateString('zh-CN', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    weekday: 'long'
-                });
-            }
+            this.updateDateTime();
             
             // 每小时更新一次问候语和背景
+            const now = new Date();
             if (now.getMinutes() === 0 && now.getSeconds() === 0) {
                 this.updateGreeting();
                 this.updateBackgroundGradient();
@@ -1684,6 +1624,31 @@ class JustInTimeApp {
         
         updateTime();
         setInterval(updateTime, 1000);
+    }
+    
+    updateDateTime() {
+        const now = new Date();
+        const timeEl = document.getElementById('current-time');
+        const dateEl = document.getElementById('current-date');
+        
+        if (timeEl) {
+            timeEl.textContent = now.toLocaleTimeString(this.currentLanguage === 'zh' ? 'zh-CN' : 'en-US', {
+                hour12: this.currentLanguage === 'en',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        if (dateEl) {
+            const locale = this.currentLanguage === 'zh' ? 'zh-CN' : 'en-US';
+            dateEl.textContent = now.toLocaleDateString(locale, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+        }
     }
     
     async updateWeather() {

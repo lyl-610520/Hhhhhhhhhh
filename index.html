@@ -79,10 +79,10 @@
                         <section class="greeting-section glass-effect">
                             <div class="time-display">
                                 <div id="current-time" class="time-text">00:00:00</div>
-                                <div id="current-date" class="date-text">2024年1月1日</div>
+                                <div id="current-date" class="date-text" data-i18n="ui.loading">Loading...</div>
                             </div>
                             <div class="greeting-content">
-                                <p id="weather-greeting" class="weather-text">正在获取天气信息...</p>
+                                <p id="weather-greeting" class="weather-text" data-i18n="ui.loadingWeather">Getting weather information...</p>
                             </div>
                             <button id="alarm-btn" class="alarm-button">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -96,11 +96,11 @@
                             <div class="quick-buttons">
                                 <button id="wake-up-btn" class="quick-btn wake-btn">
                                     <span class="btn-icon">🌅</span>
-                                    <span class="btn-text">我起床啦</span>
+                                    <span class="btn-text" data-i18n="ui.wakeUp">I'm Awake</span>
                                 </button>
                                 <button id="sleep-btn" class="quick-btn sleep-btn">
                                     <span class="btn-icon">🌙</span>
-                                    <span class="btn-text">我要睡了</span>
+                                    <span class="btn-text" data-i18n="ui.sleep">Going to Sleep</span>
                                 </button>
                             </div>
                         </section>
@@ -108,13 +108,13 @@
                         <!-- 自定义打卡区域 -->
                         <section class="custom-checkin glass-effect">
                             <div class="checkin-form">
-                                <input type="text" id="custom-task" placeholder="今天做了什么？" class="task-input">
+                                <input type="text" id="custom-task" placeholder="What did you do today?" class="task-input" data-i18n-placeholder="ui.placeholders.customTask">
                                 <select id="task-category" class="category-select">
-                                    <option value="life">生活</option>
-                                    <option value="study">学习</option>
-                                    <option value="work">工作</option>
+                                    <option value="life" data-i18n="ui.categories.life">Life</option>
+                                    <option value="study" data-i18n="ui.categories.study">Study</option>
+                                    <option value="work" data-i18n="ui.categories.work">Work</option>
                                 </select>
-                                <button id="add-task-btn" class="add-btn">添加</button>
+                                <button id="add-task-btn" class="add-btn" data-i18n="ui.addTask">Add</button>
                             </div>
                             <div id="today-tasks" class="tasks-list"></div>
                         </section>
@@ -180,18 +180,18 @@
                 <div id="page-stats" class="page">
                     <div class="page-content">
                         <section class="stats-header glass-effect">
-                            <h1 class="page-title">数据统计</h1>
+                            <h1 class="page-title" data-i18n="ui.dataStats">Data Statistics</h1>
                         </section>
                         
                         <section class="chart-container glass-effect">
-                            <h2 class="chart-title">打卡类别分布</h2>
+                            <h2 class="chart-title" data-i18n="ui.checkinCategories">Check-in Categories</h2>
                             <div class="chart-wrapper">
                                 <canvas id="category-chart" width="250" height="250"></canvas>
                             </div>
                         </section>
                         
                         <section class="chart-container glass-effect">
-                            <h2 class="chart-title">最近7日睡眠时长</h2>
+                            <h2 class="chart-title" data-i18n="ui.last7DaysSleep">Last 7 Days Sleep Duration</h2>
                             <div class="chart-wrapper">
                                 <canvas id="sleep-chart" width="300" height="180"></canvas>
                             </div>
@@ -203,38 +203,38 @@
                 <div id="page-wardrobe" class="page">
                     <div class="page-content">
                         <section class="wardrobe-header glass-effect">
-                            <h1 class="page-title">衣柜与商店</h1>
+                            <h1 class="page-title" data-i18n="ui.wardrobeAndShop">Wardrobe & Shop</h1>
                             <div class="achievement-points">
                                 <span class="points-icon">⭐</span>
                                 <span id="achievement-points">0</span>
-                                <span class="points-text">成就点</span>
+                                <span class="points-text" data-i18n="ui.achievementPoints">Achievement Points</span>
                             </div>
                         </section>
                         
                         <!-- 成就展示区 -->
                         <section class="achievement-display glass-effect">
-                            <h2 class="section-title">成就花园</h2>
+                            <h2 class="section-title" data-i18n="ui.achievementGarden">Achievement Garden</h2>
                             <div id="achievement-garden" class="achievement-garden">
-                                <!-- 成就点数量对应的星星/花朵将在这里显示 -->
+                                <!-- Achievement stars/flowers will be displayed here -->
                             </div>
                             <div id="achievements-list" class="achievements-list">
-                                <!-- 成就列表将在这里动态生成 -->
+                                <!-- Achievement list will be dynamically generated here -->
                             </div>
                         </section>
                         
                         <!-- 宠物衣柜 -->
                         <section class="pet-wardrobe glass-effect">
-                            <h2 class="section-title">宠物衣柜</h2>
+                            <h2 class="section-title" data-i18n="ui.petWardrobe">Pet Wardrobe</h2>
                             <div id="accessories-grid" class="accessories-grid">
-                                <!-- 配饰网格将在这里动态生成 -->
+                                <!-- Accessories grid will be dynamically generated here -->
                             </div>
                         </section>
                         
                         <!-- 主题商店 -->
                         <section class="theme-shop glass-effect">
-                            <h2 class="section-title">主题商店</h2>
+                            <h2 class="section-title" data-i18n="ui.themeShop">Theme Shop</h2>
                             <div id="themes-grid" class="themes-grid">
-                                <!-- 主题网格将在这里动态生成 -->
+                                <!-- Themes grid will be dynamically generated here -->
                             </div>
                         </section>
                     </div>
@@ -244,46 +244,46 @@
                 <div id="page-settings" class="page">
                     <div class="page-content">
                         <section class="settings-header glass-effect">
-                            <h1 class="page-title">设置</h1>
+                            <h1 class="page-title" data-i18n="nav.settings">Settings</h1>
                         </section>
                         
                         <!-- 显示与语言设置 -->
                         <section class="settings-group glass-effect">
-                            <h2 class="group-title">显示与语言</h2>
+                            <h2 class="group-title" data-i18n="ui.displayAndLanguage">Display & Language</h2>
                             <div class="setting-item">
-                                <label for="theme-select">主题模式</label>
+                                <label for="theme-select" data-i18n="ui.theme">Theme</label>
                                 <select id="theme-select" class="setting-select">
-                                    <option value="auto">自动</option>
-                                    <option value="light">浅色</option>
-                                    <option value="dark">深色</option>
+                                    <option value="auto" data-i18n="ui.auto">Auto</option>
+                                    <option value="light" data-i18n="ui.light">Light</option>
+                                    <option value="dark" data-i18n="ui.dark">Dark</option>
                                 </select>
                             </div>
                             <div class="setting-item">
-                                <label for="language-select">语言</label>
+                                <label for="language-select" data-i18n="ui.language">Language</label>
                                 <select id="language-select" class="setting-select">
-                                    <option value="zh">中文</option>
-                                    <option value="en">English</option>
+                                    <option value="zh" data-i18n="ui.chinese">Chinese</option>
+                                    <option value="en" data-i18n="ui.english">English</option>
                                 </select>
                             </div>
                         </section>
                         
                         <!-- 个性化设置 -->
                         <section class="settings-group glass-effect">
-                            <h2 class="group-title">个性化</h2>
+                            <h2 class="group-title" data-i18n="ui.personalization">Personalization</h2>
                             <div class="setting-item">
-                                <label for="pet-name-input">宠物名称</label>
-                                <input type="text" id="pet-name-input" placeholder="给你的伙伴起个名字" class="setting-input">
+                                <label for="pet-name-input" data-i18n="ui.petName">Pet Name</label>
+                                <input type="text" id="pet-name-input" placeholder="Give your companion a name" class="setting-input" data-i18n-placeholder="ui.placeholders.petName">
                             </div>
                             <div class="setting-item">
-                                <label for="weather-preference">天气偏好</label>
+                                <label for="weather-preference" data-i18n="ui.weatherPreference">Weather Preference</label>
                                 <select id="weather-preference" class="setting-select">
-                                    <option value="all">喜欢所有天气</option>
-                                    <option value="no-rain">讨厌雨天</option>
-                                    <option value="no-snow">讨厌雪天</option>
+                                    <option value="all" data-i18n="ui.likeAllWeather">Like All Weather</option>
+                                    <option value="no-rain" data-i18n="ui.hateRainyDays">Hate Rainy Days</option>
+                                    <option value="no-snow" data-i18n="ui.hateSnowyDays">Hate Snowy Days</option>
                                 </select>
                             </div>
                             <div class="setting-item">
-                                <label for="sound-effects">音效</label>
+                                <label for="sound-effects" data-i18n="ui.soundEffects">Sound Effects</label>
                                 <div class="toggle-switch">
                                     <input type="checkbox" id="sound-effects" checked>
                                     <span class="toggle-slider"></span>
@@ -293,33 +293,33 @@
                         
                         <!-- 倒计时设置 -->
                         <section class="settings-group glass-effect">
-                            <h2 class="group-title">倒计时设置</h2>
+                            <h2 class="group-title" data-i18n="ui.countdownSettings">Countdown Settings</h2>
                             <div class="setting-item">
-                                <label for="countdown-name-input">事件名称</label>
-                                <input type="text" id="countdown-name-input" placeholder="重要的日子" class="setting-input">
+                                <label for="countdown-name-input" data-i18n="ui.eventName">Event Name</label>
+                                <input type="text" id="countdown-name-input" placeholder="Important day" class="setting-input" data-i18n-placeholder="ui.placeholders.eventName">
                             </div>
                             <div class="setting-item">
-                                <label for="countdown-date-input">目标日期</label>
+                                <label for="countdown-date-input" data-i18n="ui.targetDate">Target Date</label>
                                 <input type="date" id="countdown-date-input" class="setting-input">
                             </div>
-                            <button id="save-countdown-btn" class="save-btn">设置倒计时</button>
+                            <button id="save-countdown-btn" class="save-btn" data-i18n="ui.setCountdown">Set Countdown</button>
                         </section>
                         
                         <!-- 智能通知 -->
                         <section class="settings-group glass-effect">
-                            <h2 class="group-title">智能通知</h2>
+                            <h2 class="group-title" data-i18n="ui.smartNotifications">Smart Notifications</h2>
                             <div class="setting-item">
-                                <label for="notification-time">每日提醒时间</label>
+                                <label for="notification-time" data-i18n="ui.dailyReminderTime">Daily Reminder Time</label>
                                 <input type="time" id="notification-time" value="21:00" class="setting-input">
                             </div>
-                            <button id="request-permission-btn" class="permission-btn">申请通知权限</button>
+                            <button id="request-permission-btn" class="permission-btn" data-i18n="ui.requestNotificationPermission">Request Notification Permission</button>
                         </section>
                         
                         <!-- 数据管理 -->
                         <section class="settings-group glass-effect">
-                            <h2 class="group-title">数据管理</h2>
-                            <button id="export-data-btn" class="export-btn">导出数据</button>
-                            <button id="reset-data-btn" class="reset-btn">回到最初的时光</button>
+                            <h2 class="group-title" data-i18n="ui.dataManagement">Data Management</h2>
+                            <button id="export-data-btn" class="export-btn" data-i18n="ui.exportData">Export Data</button>
+                            <button id="reset-data-btn" class="reset-btn" data-i18n="ui.backToBeginning">Back to the Beginning</button>
                         </section>
                     </div>
                 </div>
@@ -332,19 +332,19 @@
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                 </svg>
-                <span class="nav-label">主页</span>
+                <span class="nav-label" data-i18n="nav.home">Home</span>
             </button>
             <button class="nav-item" data-page="stats">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
                 </svg>
-                <span class="nav-label">统计</span>
+                <span class="nav-label" data-i18n="nav.stats">Stats</span>
             </button>
             <button class="nav-item" data-page="wardrobe">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
-                <span class="nav-label">成长</span>
+                <span class="nav-label" data-i18n="nav.wardrobe">Growth</span>
             </button>
             <button class="nav-item" data-page="settings">
                 <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">

@@ -405,22 +405,23 @@ input, textarea {
 
 #music-player {
   position: fixed;
-  bottom: calc(80px + var(--safe-area-bottom));
+  bottom: var(--nav-height-safe);
   left: var(--spacing-md);
   right: var(--spacing-md);
-  z-index: 1000;
+  z-index: 998; /* 低于导航栏 */
   background: var(--background-primary);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm); /* 减小padding避免重叠 */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   box-shadow: 0 8px 32px var(--shadow-color);
   transition: all var(--transition-normal);
+  height: 60px; /* 固定高度 */
 }
 
 .music-controls {
@@ -497,11 +498,18 @@ input, textarea {
    ================================================ */
 
 #main-content {
-  flex: 1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--nav-height-safe) + 70px); /* 为音乐播放器留出空间 */
   padding: var(--spacing-sm);
-  padding-bottom: 140px; /* 为音乐播放器和导航栏留出空间 */
   overflow-y: auto;
-  height: calc(100vh - 140px); /* 固定高度，避免滚动问题 */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* 防止页面整体滚动 */
+  height: calc(100vh - var(--nav-height-safe) - 70px) !important;
+  width: 100vw !important;
 }
 
 #page-container {
@@ -2356,8 +2364,11 @@ html {
 }
 
 body {
-  overflow-x: hidden;
-  will-change: scroll-position;
+  overflow: hidden !important; /* 完全禁止body滚动 */
+  height: 100vh !important;
+  width: 100vw !important;
+  position: fixed !important;
+  touch-action: none; /* 防止意外滚动 */
 }
 
 /* ================================================
