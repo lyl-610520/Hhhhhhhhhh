@@ -394,6 +394,78 @@ const i18n = {
                 '早起的你真是太棒了！',
                 '晨光中的你最美丽'
             ]
+        },
+        ui: {
+            quickCheckin: '快捷打卡',
+            customCheckin: '自定义打卡',
+            wakeUp: '我起床啦',
+            sleep: '我要睡了',
+            addTask: '添加',
+            myCompanion: '我的伙伴',
+            myFlower: '我的花朵',
+            importantCountdown: '重要倒计时',
+            dataStats: '数据统计',
+            checkinCategories: '打卡类别分布',
+            last7DaysSleep: '最近7日睡眠时长',
+            wardrobeAndShop: '衣柜与商店',
+            achievementPoints: '成就点',
+            achievementGarden: '成就花园',
+            petWardrobe: '宠物衣柜',
+            themeShop: '主题商店',
+            displayAndLanguage: '显示与语言',
+            personalization: '个性化',
+            countdownSettings: '倒计时设置',
+            smartNotifications: '智能通知',
+            dataManagement: '数据管理',
+            theme: '主题模式',
+            language: '语言',
+            petName: '宠物名称',
+            weatherPreference: '天气偏好',
+            soundEffects: '音效',
+            eventName: '事件名称',
+            targetDate: '目标日期',
+            setCountdown: '设置倒计时',
+            dailyReminderTime: '每日提醒时间',
+            requestNotificationPermission: '申请通知权限',
+            exportData: '导出数据',
+            backToBeginning: '回到最初的时光',
+            auto: '自动',
+            light: '浅色',
+            dark: '深色',
+            chinese: '中文',
+            english: 'English',
+            likeAllWeather: '喜欢所有天气',
+            hateRainyDays: '讨厌雨天',
+            hateSnowyDays: '讨厌雪天',
+            categories: {
+                life: '生活',
+                study: '学习',
+                work: '工作',
+                wake: '起床',
+                sleep: '睡觉'
+            },
+            flowerLevels: {
+                seed: '种子',
+                sprout: '出芽',
+                sapling: '小苗',
+                bud: '花骨朵',
+                bloom: '开花'
+            },
+            placeholders: {
+                petName: '给你的伙伴起个名字',
+                taskInput: '今天做了什么？',
+                eventName: '重要的日子',
+                customTask: '今天做了什么？'
+            },
+            messages: {
+                resetConfirm: '确定要重置所有数据吗？此操作无法撤销。',
+                resetComplete: '数据重置成功，涅槃重生！✨',
+                exportSuccess: '数据导出成功！',
+                duplicateCheckin: '今天已经打过这个卡了',
+                alarmSet: '闹钟设置成功！',
+                notificationPermissionGranted: '通知权限已开启！',
+                notificationPermissionDenied: '通知权限被拒绝'
+            }
         }
     },
     en: {
@@ -440,6 +512,78 @@ const i18n = {
                 'You getting up early is fantastic!',
                 'You\'re most beautiful in the morning light'
             ]
+        },
+        ui: {
+            quickCheckin: 'Quick Check-in',
+            customCheckin: 'Custom Check-in',
+            wakeUp: 'I\'m Awake',
+            sleep: 'Going to Sleep',
+            addTask: 'Add',
+            myCompanion: 'My Companion',
+            myFlower: 'My Flower',
+            importantCountdown: 'Important Countdown',
+            dataStats: 'Data Statistics',
+            checkinCategories: 'Check-in Categories',
+            last7DaysSleep: 'Last 7 Days Sleep Duration',
+            wardrobeAndShop: 'Wardrobe & Shop',
+            achievementPoints: 'Achievement Points',
+            achievementGarden: 'Achievement Garden',
+            petWardrobe: 'Pet Wardrobe',
+            themeShop: 'Theme Shop',
+            displayAndLanguage: 'Display & Language',
+            personalization: 'Personalization',
+            countdownSettings: 'Countdown Settings',
+            smartNotifications: 'Smart Notifications',
+            dataManagement: 'Data Management',
+            theme: 'Theme',
+            language: 'Language',
+            petName: 'Pet Name',
+            weatherPreference: 'Weather Preference',
+            soundEffects: 'Sound Effects',
+            eventName: 'Event Name',
+            targetDate: 'Target Date',
+            setCountdown: 'Set Countdown',
+            dailyReminderTime: 'Daily Reminder Time',
+            requestNotificationPermission: 'Request Notification Permission',
+            exportData: 'Export Data',
+            backToBeginning: 'Back to the Beginning',
+            auto: 'Auto',
+            light: 'Light',
+            dark: 'Dark',
+            chinese: 'Chinese',
+            english: 'English',
+            likeAllWeather: 'Like All Weather',
+            hateRainyDays: 'Hate Rainy Days',
+            hateSnowyDays: 'Hate Snowy Days',
+            categories: {
+                life: 'Life',
+                study: 'Study',
+                work: 'Work',
+                wake: 'Wake Up',
+                sleep: 'Sleep'
+            },
+            flowerLevels: {
+                seed: 'Seed',
+                sprout: 'Sprout',
+                sapling: 'Sapling',
+                bud: 'Bud',
+                bloom: 'Bloom'
+            },
+            placeholders: {
+                petName: 'Give your companion a name',
+                taskInput: 'What did you do today?',
+                eventName: 'Important day',
+                customTask: 'What did you do today?'
+            },
+            messages: {
+                resetConfirm: 'Are you sure you want to reset all data? This action cannot be undone.',
+                resetComplete: 'Data has been reset successfully. A new journey begins! ✨',
+                exportSuccess: 'Data exported successfully!',
+                duplicateCheckin: 'You have already checked in for this today',
+                alarmSet: 'Alarm set successfully!',
+                notificationPermissionGranted: 'Notification permission granted!',
+                notificationPermissionDenied: 'Notification permission denied'
+            }
         }
     }
 };

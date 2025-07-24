@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能测试 - Just in Time</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="scripts/seasons.js"></script>
+    <script src="scripts/flower.js"></script>
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        
+        .test-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            border-radius: 1rem;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .test-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .flower-showcase {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .flower-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            min-width: 120px;
+        }
+        
+        #tree-canvas {
+            width: 100%;
+            height: 300px;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .theme-controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 95, 191, 0.3);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-pass {
+            background: #22c55e;
+        }
+        
+        .status-fail {
+            background: #ef4444;
+        }
+        
+        .status-pending {
+            background: #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <header class="test-section glass-effect">
+            <h1>🚀 Just in Time 功能测试面板</h1>
+            <p>测试所有新增功能是否正常工作</p>
+            
+            <div class="theme-controls">
+                <button class="control-btn" onclick="setTheme('light')">浅色主题</button>
+                <button class="control-btn" onclick="setTheme('dark')">深色主题</button>
+                <button class="control-btn" onclick="setTheme('auto')">自动主题</button>
+                <button class="control-btn" onclick="runAllTests()">运行所有测试</button>
+            </div>
+        </header>
+        
+        <!-- 主题系统测试 -->
+        <section class="test-section glass-effect">
+            <h2><span id="theme-status" class="status-indicator status-pending"></span>主题系统测试</h2>
+            <p>测试深浅色主题切换和CSS变量系统</p>
+            
+            <div class="test-grid">
+                <div class="test-item glass-effect-secondary">
+                    <h3>主要颜色</h3>
+                    <div style="background: var(--primary-color); height: 30px; border-radius: 5px; margin: 5px 0;"></div>
+                    <div style="background: var(--secondary-color); height: 30px; border-radius: 5px; margin: 5px 0;"></div>
+                    <div style="background: var(--accent-color); height: 30px; border-radius: 5px; margin: 5px 0;"></div>
+                </div>
+                
+                <div class="test-item glass-effect-accent">
+                    <h3>背景渐变</h3>
+                    <div style="background: var(--bg-gradient-morning); height: 30px; border-radius: 5px; margin: 5px 0;"></div>
+                    <div style="background: var(--bg-gradient-day); height: 30px; border-radius: 5px; margin: 5px 0;"></div>
+                    <div style="background: var(--bg-gradient-evening); height: 30px; border-radius: 5px; margin: 5px 0;"></div>
+                    <div style="background: var(--bg-gradient-night); height: 30px; border-radius: 5px; margin: 5px 0;"></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 四季树测试 -->
+        <section class="test-section glass-effect">
+            <h2><span id="tree-status" class="status-indicator status-pending"></span>四季树Canvas渲染测试</h2>
+            <p>测试水彩风格四季树和粒子效果</p>
+            
+            <canvas id="tree-canvas"></canvas>
+            
+            <div class="theme-controls">
+                <button class="control-btn" onclick="changeSeason('spring')">春季</button>
+                <button class="control-btn" onclick="changeSeason('summer')">夏季</button>
+                <button class="control-btn" onclick="changeSeason('autumn')">秋季</button>
+                <button class="control-btn" onclick="changeSeason('winter')">冬季</button>
+                <button class="control-btn" onclick="toggleAnimation()">暂停/恢复</button>
+            </div>
+        </section>
+        
+        <!-- 花朵SVG测试 -->
+        <section class="test-section glass-effect">
+            <h2><span id="flower-status" class="status-indicator status-pending"></span>花朵SVG生成器测试</h2>
+            <p>测试不同成长阶段的精美花朵SVG</p>
+            
+            <div class="flower-showcase">
+                <div class="flower-item glass-effect-secondary">
+                    <h4>种子 (Level 0)</h4>
+                    <div id="flower-0"></div>
+                </div>
+                <div class="flower-item glass-effect-secondary">
+                    <h4>出芽 (Level 1)</h4>
+                    <div id="flower-1"></div>
+                </div>
+                <div class="flower-item glass-effect-secondary">
+                    <h4>小苗 (Level 2)</h4>
+                    <div id="flower-2"></div>
+                </div>
+                <div class="flower-item glass-effect-secondary">
+                    <h4>花骨朵 (Level 3)</h4>
+                    <div id="flower-3"></div>
+                </div>
+                <div class="flower-item glass-effect-secondary">
+                    <h4>开花 (Level 4)</h4>
+                    <div id="flower-4"></div>
+                </div>
+            </div>
+            
+            <div class="theme-controls">
+                <button class="control-btn" onclick="updateFlowerTheme('light')">浅色花朵</button>
+                <button class="control-btn" onclick="updateFlowerTheme('dark')">深色花朵</button>
+                <button class="control-btn" onclick="animateFlowers()">动画效果</button>
+            </div>
+        </section>
+        
+        <!-- 响应式测试 -->
+        <section class="test-section glass-effect">
+            <h2><span id="responsive-status" class="status-indicator status-pending"></span>响应式设计测试</h2>
+            <p>测试自适应缩放和断点系统</p>
+            
+            <div class="test-grid">
+                <div class="test-item glass-effect-secondary">
+                    <h3>当前视口</h3>
+                    <p id="viewport-info">-</p>
+                </div>
+                <div class="test-item glass-effect-secondary">
+                    <h3>设备像素比</h3>
+                    <p id="dpr-info">-</p>
+                </div>
+                <div class="test-item glass-effect-secondary">
+                    <h3>字体大小</h3>
+                    <p id="font-size-info">-</p>
+                </div>
+                <div class="test-item glass-effect-secondary">
+                    <h3>容器大小</h3>
+                    <p id="container-info">-</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 毛玻璃效果测试 -->
+        <section class="test-section glass-effect">
+            <h2><span id="glass-status" class="status-indicator status-pending"></span>毛玻璃效果测试</h2>
+            <p>测试backdrop-filter和渐变效果</p>
+            
+            <div class="test-grid">
+                <div class="test-item glass-effect">标准毛玻璃</div>
+                <div class="test-item glass-effect-secondary">次要毛玻璃</div>
+                <div class="test-item glass-effect-accent">强调毛玻璃</div>
+            </div>
+        </section>
+        
+        <!-- 测试结果 -->
+        <section class="test-section glass-effect">
+            <h2>📊 测试结果</h2>
+            <div id="test-results">
+                <p>点击"运行所有测试"开始测试...</p>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        let seasonsTree = null;
+        let flowerGenerator = null;
+        let animationPaused = false;
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTests();
+            updateResponsiveInfo();
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', updateResponsiveInfo);
+        });
+        
+        function initializeTests() {
+            // 初始化四季树
+            if (window.SeasonsTreeRenderer) {
+                seasonsTree = new SeasonsTreeRenderer('tree-canvas');
+                seasonsTree.startAnimation();
+                updateStatus('tree-status', 'pass');
+            } else {
+                updateStatus('tree-status', 'fail');
+            }
+            
+            // 初始化花朵生成器
+            if (window.FlowerSVGGenerator) {
+                flowerGenerator = new FlowerSVGGenerator();
+                updateFlowerDisplay();
+                updateStatus('flower-status', 'pass');
+            } else {
+                updateStatus('flower-status', 'fail');
+            }
+            
+            // 测试主题系统
+            testThemeSystem();
+            
+            // 测试响应式
+            testResponsiveSystem();
+            
+            // 测试毛玻璃效果
+            testGlassEffect();
+        }
+        
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            updateFlowerDisplay(); // 重新生成花朵以适应主题
+        }
+        
+        function changeSeason(season) {
+            if (seasonsTree) {
+                seasonsTree.changeSeason(season);
+            }
+        }
+        
+        function toggleAnimation() {
+            if (!seasonsTree) return;
+            
+            if (animationPaused) {
+                seasonsTree.startAnimation();
+                animationPaused = false;
+            } else {
+                seasonsTree.stopAnimation();
+                animationPaused = true;
+            }
+        }
+        
+        function updateFlowerDisplay() {
+            if (!flowerGenerator) return;
+            
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            
+            for (let i = 0; i < 5; i++) {
+                const container = document.getElementById(`flower-${i}`);
+                if (container) {
+                    container.innerHTML = flowerGenerator.generateFlowerSVG(i, currentTheme);
+                }
+            }
+        }
+        
+        function updateFlowerTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            updateFlowerDisplay();
+        }
+        
+        function animateFlowers() {
+            for (let i = 0; i < 5; i++) {
+                const container = document.getElementById(`flower-${i}`);
+                if (container && flowerGenerator) {
+                    container.innerHTML = flowerGenerator.generateAnimatedFlowerSVG(i, 'glow');
+                }
+            }
+        }
+        
+        function updateResponsiveInfo() {
+            document.getElementById('viewport-info').textContent = 
+                `${window.innerWidth} x ${window.innerHeight}px`;
+            
+            document.getElementById('dpr-info').textContent = 
+                window.devicePixelRatio || 1;
+            
+            document.getElementById('font-size-info').textContent = 
+                getComputedStyle(document.documentElement).fontSize;
+            
+            document.getElementById('container-info').textContent = 
+                document.querySelector('.test-container').offsetWidth + 'px';
+        }
+        
+        function testThemeSystem() {
+            const testEl = document.createElement('div');
+            testEl.style.color = 'var(--primary-color)';
+            document.body.appendChild(testEl);
+            
+            const color = getComputedStyle(testEl).color;
+            document.body.removeChild(testEl);
+            
+            updateStatus('theme-status', color !== 'var(--primary-color)' ? 'pass' : 'fail');
+        }
+        
+        function testResponsiveSystem() {
+            const hasContainerQueries = CSS.supports('container-type: inline-size');
+            const hasClamp = CSS.supports('font-size: clamp(14px, 2vw, 18px)');
+            
+            updateStatus('responsive-status', hasContainerQueries && hasClamp ? 'pass' : 'fail');
+        }
+        
+        function testGlassEffect() {
+            const hasBackdropFilter = CSS.supports('backdrop-filter: blur(10px)') || 
+                                     CSS.supports('-webkit-backdrop-filter: blur(10px)');
+            
+            updateStatus('glass-status', hasBackdropFilter ? 'pass' : 'fail');
+        }
+        
+        function updateStatus(elementId, status) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.className = `status-indicator status-${status}`;
+            }
+        }
+        
+        function runAllTests() {
+            const results = [];
+            
+            // 收集测试结果
+            const statuses = ['theme-status', 'tree-status', 'flower-status', 'responsive-status', 'glass-status'];
+            const names = ['主题系统', '四季树渲染', '花朵SVG生成', '响应式设计', '毛玻璃效果'];
+            
+            statuses.forEach((statusId, index) => {
+                const element = document.getElementById(statusId);
+                const status = element.className.includes('status-pass') ? '✅ 通过' : 
+                              element.className.includes('status-fail') ? '❌ 失败' : 
+                              '⏳ 待测';
+                results.push(`${names[index]}: ${status}`);
+            });
+            
+            // 显示结果
+            const resultsContainer = document.getElementById('test-results');
+            resultsContainer.innerHTML = `
+                <h3>🔍 测试完成</h3>
+                <ul style="text-align: left;">
+                    ${results.map(result => `<li>${result}</li>`).join('')}
+                </ul>
+                <p><strong>浏览器信息:</strong> ${navigator.userAgent}</p>
+                <p><strong>测试时间:</strong> ${new Date().toLocaleString()}</p>
+            `;
+        }
+    </script>
+</body>
+</html>

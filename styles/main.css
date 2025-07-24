@@ -4,24 +4,32 @@
 
 :root {
   /* 颜色主题 - 浅色模式 */
-  --primary-color: #667eea;
-  --secondary-color: #764ba2;
-  --accent-color: #f093fb;
-  --background-primary: rgba(255, 255, 255, 0.95);
-  --background-secondary: rgba(248, 249, 250, 0.9);
-  --text-primary: #2d3748;
-  --text-secondary: #718096;
-  --text-muted: #a0aec0;
-  --border-color: rgba(255, 255, 255, 0.3);
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --success-color: #48bb78;
-  --warning-color: #ed8936;
-  --error-color: #f56565;
+  --primary-color: #8B5FBF;
+  --secondary-color: #6366f1;
+  --accent-color: #ec4899;
+  --tertiary-color: #06b6d4;
+  --background-primary: rgba(255, 255, 255, 0.85);
+  --background-secondary: rgba(248, 250, 252, 0.8);
+  --background-tertiary: rgba(241, 245, 249, 0.7);
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.4);
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --success-color: #22c55e;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  --info-color: #3b82f6;
   
-  /* 动态背景渐变 */
-  --bg-gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --bg-gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --bg-gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  /* 精美渐变背景 */
+  --bg-gradient-morning: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff8a80 100%);
+  --bg-gradient-day: linear-gradient(135deg, #a8edea 0%, #fed6e3 50%, #ffd3a5 100%);
+  --bg-gradient-evening: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --bg-gradient-night: linear-gradient(135deg, #2c3e50 0%, #4a6fa5 50%, #166a8f 100%);
+  
+  /* 毛玻璃渐变 */
+  --glass-gradient-1: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  --glass-gradient-2: linear-gradient(135deg, rgba(139, 95, 191, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
   
   /* 间距系统 */
   --spacing-xs: 0.25rem;  /* 4px */
@@ -62,17 +70,99 @@
   --safe-area-bottom: env(safe-area-inset-bottom);
   --safe-area-left: env(safe-area-inset-left);
   --safe-area-right: env(safe-area-inset-right);
+  
+  /* 响应式断点 */
+  --breakpoint-xs: 375px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+  
+  /* 自适应缩放 */
+  --scale-factor: clamp(0.8, 1vw + 0.5rem, 1.2);
+  --container-max-width: min(100vw, 480px);
+  --content-padding: clamp(1rem, 4vw, 2rem);
 }
 
 /* 深色模式变量 */
 [data-theme="dark"] {
-  --background-primary: rgba(26, 32, 44, 0.95);
-  --background-secondary: rgba(45, 55, 72, 0.9);
-  --text-primary: #f7fafc;
-  --text-secondary: #e2e8f0;
-  --text-muted: #a0aec0;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --shadow-color: rgba(0, 0, 0, 0.3);
+  --background-primary: rgba(15, 23, 42, 0.9);
+  --background-secondary: rgba(30, 41, 59, 0.85);
+  --background-tertiary: rgba(51, 65, 85, 0.8);
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.15);
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  
+  /* 深色模式背景渐变 */
+  --bg-gradient-morning: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%);
+  --bg-gradient-day: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
+  --bg-gradient-evening: linear-gradient(135deg, #7c2d12 0%, #dc2626 50%, #f59e0b 100%);
+  --bg-gradient-night: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  
+  /* 深色毛玻璃渐变 */
+  --glass-gradient-1: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  --glass-gradient-2: linear-gradient(135deg, rgba(139, 95, 191, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
+}
+
+/* ================================================
+   导入子样式文件
+   ================================================ */
+@import url('./icons.css');
+
+/* ================================================
+   响应式设计 & 自适应缩放
+   ================================================ */
+
+/* 移动设备优先的响应式基础设置 */
+@media screen and (max-width: 767px) {
+  :root {
+    --content-padding: 1rem;
+    --spacing-scale: 0.8;
+  }
+  
+  html {
+    font-size: clamp(14px, 3.5vw, 16px);
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --content-padding: 1.5rem;
+    --spacing-scale: 0.9;
+  }
+  
+  html {
+    font-size: clamp(15px, 2.2vw, 17px);
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  :root {
+    --content-padding: 2rem;
+    --spacing-scale: 1;
+  }
+  
+  html {
+    font-size: clamp(16px, 1.5vw, 18px);
+  }
+}
+
+/* 容器查询支持 */
+@container (max-width: 480px) {
+  .glass-effect {
+    padding: calc(var(--spacing-md) * 0.75);
+    margin-bottom: calc(var(--spacing-lg) * 0.75);
+  }
+}
+
+@container (min-width: 768px) {
+  .glass-effect {
+    padding: calc(var(--spacing-xl) * 1.2);
+    margin-bottom: calc(var(--spacing-xl) * 1.2);
+  }
 }
 
 /* ================================================
@@ -93,14 +183,25 @@ html {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  /* 响应式字体大小 */
+  font-size: clamp(14px, 2.5vw, 18px);
+  /* 防止页面缩放 */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-family-primary);
   font-size: var(--font-size-md);
+  min-height: 100vh;
+  min-height: 100dvh; /* 使用动态视口高度 */
+  overflow-x: hidden;
+  position: relative;
+  /* 响应式容器 */
+  container-type: inline-size;
   line-height: 1.6;
   color: var(--text-primary);
-  background: var(--bg-gradient-1);
+  background: var(--bg-gradient-day);
   min-height: 100vh;
   overflow-x: hidden;
   /* 优化触摸滚动 */
@@ -195,22 +296,58 @@ input, textarea {
    ================================================ */
 
 .glass-effect {
-  background: var(--background-primary);
+  background: var(--glass-gradient-1);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   box-shadow: 
     0 8px 32px var(--shadow-color),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    0 4px 16px rgba(139, 95, 191, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05);
   transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  opacity: 0.6;
 }
 
 .glass-effect:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 
-    0 12px 40px var(--shadow-color),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 16px 48px var(--shadow-color),
+    0 8px 24px rgba(139, 95, 191, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.glass-effect-secondary {
+  background: var(--glass-gradient-2);
+  border-color: rgba(139, 95, 191, 0.2);
+}
+
+.glass-effect-accent {
+  background: linear-gradient(135deg, 
+    rgba(236, 72, 153, 0.1) 0%, 
+    rgba(99, 102, 241, 0.05) 100%
+  );
+  border-color: rgba(236, 72, 153, 0.2);
 }
 
 /* ================================================
@@ -745,18 +882,37 @@ input, textarea {
 .chart-container {
   padding: var(--spacing-xl);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  min-height: fit-content;
 }
 
 .chart-title {
   font-size: var(--font-size-lg);
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-lg);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 canvas {
-  max-width: 100%;
-  height: auto;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
 }
 
 /* ================================================
