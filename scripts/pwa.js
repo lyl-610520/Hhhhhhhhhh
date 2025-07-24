@@ -12,8 +12,8 @@ if ('serviceWorker' in navigator) {
         try {
             console.log('开始注册 Service Worker...');
             
-            const registration = await navigator.serviceWorker.register('/sw.js', {
-                scope: '/'
+            const registration = await navigator.serviceWorker.register('sw.js', {
+                scope: './'
             });
             
             console.log('Service Worker 注册成功:', registration.scope);

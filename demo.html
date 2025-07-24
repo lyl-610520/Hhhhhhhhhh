@@ -3,18 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Just in Time - 恰逢其时</title>
-    
-    <!-- PWA配置 -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Just in Time">
-    
-    <!-- 图标配置 -->
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
+    <title>Just in Time - 恰逢其时 (演示版)</title>
     
     <!-- 预加载关键字体 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,8 +11,34 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="styles/main.css">
+    
+    <style>
+        /* 添加一个演示版本的标识 */
+        .demo-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            z-index: 10001;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        body {
+            padding-top: 2.5rem;
+        }
+    </style>
 </head>
 <body>
+    <!-- 演示版横幅 -->
+    <div class="demo-banner">
+        📱 Just in Time 演示版 - 完整PWA功能需要HTTPS环境
+    </div>
+
     <!-- 主应用容器 -->
     <div id="app">
         <!-- 动态背景层 -->
@@ -84,7 +99,7 @@
                             </div>
                             <div class="greeting-content">
                                 <h1 id="greeting-text" class="greeting-title">欢迎来到恰逢其时</h1>
-                                <p id="weather-greeting" class="weather-text">正在获取天气信息...</p>
+                                <p id="weather-greeting" class="weather-text">今天阳光明媚，心情也要像阳光一样灿烂哦！</p>
                             </div>
                             <button id="alarm-btn" class="alarm-button">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -294,6 +309,9 @@
                                 <input type="time" id="notification-time" value="21:00" class="setting-input">
                             </div>
                             <button id="request-permission-btn" class="permission-btn">申请通知权限</button>
+                            <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">
+                                ⚠️ 演示版中通知功能受限，完整功能需要HTTPS环境
+                            </p>
                         </section>
                         
                         <!-- 数据管理 -->
@@ -344,7 +362,85 @@
     
     <!-- 加载脚本 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 演示版修改：禁用一些需要HTTPS的功能
+        const isDemoMode = true;
+        
+        // 简化的天气服务（演示版）
+        class DemoWeatherService {
+            async getCurrentWeather() {
+                return {
+                    condition: '晴',
+                    code: 1000,
+                    temp: 22,
+                    humidity: 60,
+                    windSpeed: 5,
+                    location: '演示城市'
+                };
+            }
+            
+            showWeatherEffect() {
+                // 演示版不显示特效
+            }
+        }
+        
+        // 修改PWA相关功能
+        if ('serviceWorker' in navigator && !isDemoMode) {
+            // 只在非演示模式下注册Service Worker
+        }
+    </script>
     <script src="scripts/main.js"></script>
-    <script src="scripts/pwa.js"></script>
+    <script>
+        // 演示版初始化逻辑
+        document.addEventListener('DOMContentLoaded', () => {
+            // 替换天气服务为演示版
+            if (window.app && window.app.weatherService) {
+                window.app.weatherService = new DemoWeatherService();
+            }
+            
+            // 添加演示数据
+            if (window.appState) {
+                // 添加一些示例打卡数据
+                const today = new Date().toDateString();
+                window.appState.data.checkins = [
+                    {
+                        id: 1,
+                        task: '我起床啦',
+                        category: 'wake',
+                        timestamp: new Date().toISOString(),
+                        date: today
+                    },
+                    {
+                        id: 2,
+                        task: '看了一本书',
+                        category: 'study',
+                        timestamp: new Date().toISOString(),
+                        date: today
+                    },
+                    {
+                        id: 3,
+                        task: '做了运动',
+                        category: 'life',
+                        timestamp: new Date().toISOString(),
+                        date: today
+                    }
+                ];
+                
+                // 添加一些花朵进度
+                window.appState.data.flower.sunlight = 35;
+                window.appState.data.flower.level = 1;
+                
+                // 添加一些成就点
+                window.appState.data.achievements.points = 20;
+                
+                // 重新更新UI
+                if (window.app) {
+                    window.app.updateTodayTasks();
+                    window.app.updateFlowerDisplay();
+                    window.app.updateAchievements();
+                }
+            }
+        });
+    </script>
 </body>
 </html>

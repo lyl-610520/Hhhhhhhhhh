@@ -8,12 +8,12 @@ const RUNTIME_CACHE = 'just-in-time-runtime';
 
 // 需要缓存的核心资源
 const CORE_ASSETS = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/styles/main.css',
-    '/scripts/main.js',
-    '/scripts/pwa.js',
+    './',
+    './index.html',
+    './manifest.json',
+    './styles/main.css',
+    './scripts/main.js',
+    './scripts/pwa.js',
     
     // 字体资源
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap',
@@ -22,8 +22,8 @@ const CORE_ASSETS = [
     'https://cdn.jsdelivr.net/npm/chart.js',
     
     // 图标（如果有的话）
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png'
+    './icons/icon-192x192.png',
+    './icons/icon-512x512.png'
 ];
 
 // 运行时缓存的资源模式

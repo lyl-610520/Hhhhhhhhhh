@@ -42,11 +42,11 @@ const CONFIG = {
     
     // 预设音乐列表
     defaultMusic: [
-        { name: '曲目一', path: '/audio/track1.mp3' },
-        { name: '曲目二', path: '/audio/track2.mp3' },
-        { name: '曲目三', path: '/audio/track3.mp3' },
-        { name: '曲目四', path: '/audio/track4.mp3' },
-        { name: '曲目五', path: '/audio/track5.mp3' }
+        { name: '曲目一', path: './audio/track1.mp3' },
+        { name: '曲目二', path: './audio/track2.mp3' },
+        { name: '曲目三', path: './audio/track3.mp3' },
+        { name: '曲目四', path: './audio/track4.mp3' },
+        { name: '曲目五', path: './audio/track5.mp3' }
     ]
 };
 
