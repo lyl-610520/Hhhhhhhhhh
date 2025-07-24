@@ -494,8 +494,10 @@ input, textarea {
 
 #main-content {
   flex: 1;
-  padding: var(--spacing-md);
-  padding-bottom: calc(160px + var(--safe-area-bottom)); /* 为音乐播放器和导航栏留出空间 */
+  padding: var(--spacing-sm);
+  padding-bottom: 140px; /* 为音乐播放器和导航栏留出空间 */
+  overflow-y: auto;
+  height: calc(100vh - 140px); /* 固定高度，避免滚动问题 */
 }
 
 #page-container {
@@ -534,7 +536,8 @@ input, textarea {
 .page-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
+  padding: 0;
 }
 
 /* ================================================
@@ -882,19 +885,19 @@ input, textarea {
    主页样式
    ================================================ */
 
-/* 问候区域 */
+/* 问候区域 - 紧凑布局 */
 .greeting-section {
-  padding: var(--spacing-xl);
+  padding: var(--spacing-md);
   text-align: center;
   position: relative;
 }
 
 .time-display {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .time-text {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-2xl);
   font-weight: 700;
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
@@ -1133,24 +1136,24 @@ input, textarea {
   font-size: var(--font-size-sm);
 }
 
-/* 游戏化面板 */
+/* 游戏化面板 - 紧凑布局 */
 .gamification-panel {
   display: flex;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 .pet-container,
 .flower-container {
   flex: 1;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   text-align: center;
 }
 
 .panel-title {
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .pet-visual,
@@ -1613,7 +1616,7 @@ input:checked + .toggle-slider:before {
 
 .bottom-navigation {
   position: fixed;
-  bottom: var(--safe-area-bottom);
+  bottom: 0;
   left: 0;
   right: 0;
   z-index: 999;
@@ -1622,9 +1625,13 @@ input:checked + .toggle-slider:before {
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border-top: 1px solid var(--border-color);
   padding: var(--spacing-md);
+  padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
   display: flex;
   justify-content: space-around;
   align-items: center;
+  /* 确保在iPad上显示 */
+  min-height: 80px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .nav-item {
@@ -2332,4 +2339,78 @@ html {
 body {
   overflow-x: hidden;
   will-change: scroll-position;
+}
+
+/* ================================================
+   iPad兼容性修复
+   ================================================ */
+
+/* iPad专用样式 */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  /* 强制显示导航栏 */
+  .bottom-navigation {
+    bottom: 0 !important;
+    position: fixed !important;
+    z-index: 9999 !important;
+    min-height: 90px;
+    padding: var(--spacing-lg);
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .nav-item {
+    min-width: 80px;
+    padding: var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  #main-content {
+    height: calc(100vh - 160px);
+    padding-bottom: 160px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .page-content {
+    gap: var(--spacing-lg);
+    max-height: none;
+  }
+  
+  .gamification-panel {
+    gap: var(--spacing-md);
+    flex-direction: row;
+  }
+  
+  .pet-container,
+  .flower-container {
+    padding: var(--spacing-lg);
+  }
+  
+  /* 增大可点击区域 */
+  .quick-btn {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    font-size: var(--font-size-lg);
+  }
+  
+  .animated-pet {
+    transform: scale(1.2);
+  }
+}
+
+/* 通用移动设备优化 */
+@media screen and (max-width: 767px) {
+  .bottom-navigation {
+    min-height: 75px;
+  }
+  
+  .gamification-panel {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .pet-container,
+  .flower-container {
+    padding: var(--spacing-sm);
+  }
 }

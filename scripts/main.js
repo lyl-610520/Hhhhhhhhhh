@@ -2553,24 +2553,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         console.log('核心应用初始化完成');
         
-        // 延迟初始化附加功能，避免阻塞主要功能
+        // 快速初始化入场动画
         setTimeout(() => {
             try {
-                // 初始化入场动画和PWA指引
                 if (window.AppIntroManager) {
                     window.introManager = new AppIntroManager();
                 }
-                
-                // 初始化花朵生成器
+                console.log('入场动画初始化完成');
+            } catch (error) {
+                console.warn('入场动画初始化失败:', error);
+            }
+        }, 100);
+        
+        // 延迟初始化其他功能
+        setTimeout(() => {
+            try {
                 if (window.FlowerSVGGenerator) {
                     window.flowerGenerator = new FlowerSVGGenerator();
                 }
-                
-                console.log('扩展功能初始化完成');
+                console.log('花朵生成器初始化完成');
             } catch (error) {
-                console.warn('扩展功能初始化失败:', error);
+                console.warn('花朵生成器初始化失败:', error);
             }
-        }, 500);
+        }, 1000);
         
         // 暂时禁用Canvas组件，专注核心功能
         /*
