@@ -834,19 +834,21 @@ class WeatherService {
     getUserLocation() {
         return new Promise((resolve, reject) => {
             if (!navigator.geolocation) {
-                reject(new Error('浏览器不支持地理定位'));
+                console.warn('浏览器不支持地理定位，使用默认位置');
+                resolve({ latitude: 39.9042, longitude: 116.4074 }); // 北京
                 return;
             }
             
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    console.log('获取到用户位置:', position.coords);
                     resolve({
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     });
                 },
                 (error) => {
-                    console.error('获取位置失败:', error);
+                    console.warn('获取位置失败，使用默认位置:', error);
                     // 使用默认位置（北京）
                     resolve({
                         latitude: 39.9042,
@@ -2393,14 +2395,56 @@ class JustInTimeApp {
 let appState;
 let app;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM加载完成，开始初始化应用...');
     
-    // 初始化应用状态
-    appState = new AppState();
-    
-    // 初始化主应用
-    app = new JustInTimeApp();
+    try {
+        // 初始化入场动画和PWA指引
+        if (window.AppIntroManager) {
+            window.introManager = new AppIntroManager();
+        }
+        
+        // 初始化动态背景
+        if (window.DynamicBackgroundRenderer) {
+            window.dynamicBg = new DynamicBackgroundRenderer('dynamic-background-canvas');
+        }
+        
+        // 初始化四季树
+        if (window.SeasonsTreeRenderer) {
+            window.seasonsTree = new SeasonsTreeRenderer('atmosphere-canvas');
+            window.seasonsTree.startAnimation();
+        }
+        
+        // 初始化花朵生成器
+        if (window.FlowerSVGGenerator) {
+            window.flowerGenerator = new FlowerSVGGenerator();
+        }
+        
+        // 初始化应用状态
+        appState = new AppState();
+        
+        // 初始化主应用
+        app = new JustInTimeApp();
+        
+        // 响应式处理
+        window.addEventListener('resize', () => {
+            if (window.dynamicBg) window.dynamicBg.resize();
+            if (window.seasonsTree) window.seasonsTree.resize();
+        });
+        
+        // iPad横竖屏切换优化
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (window.dynamicBg) window.dynamicBg.resize();
+                if (window.seasonsTree) window.seasonsTree.resize();
+            }, 100);
+        });
+        
+        console.log('应用初始化完成');
+        
+    } catch (error) {
+        console.error('应用初始化失败:', error);
+    }
 });
 
 // 全局错误处理

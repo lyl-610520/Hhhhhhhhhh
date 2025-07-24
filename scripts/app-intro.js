@@ -9,6 +9,11 @@ class AppIntroManager {
         this.deferredPrompt = null;
         this.skipIntroFlag = false;
         
+        console.log('AppIntroManager初始化，首次访问:', this.isFirstVisit);
+        
+        // 暂时强制显示入场动画用于测试
+        // this.isFirstVisit = true;
+        
         this.init();
     }
     
@@ -194,7 +199,7 @@ class AppIntroManager {
                 return;
             }
             
-            progress += Math.random() * 15 + 5;
+            progress += Math.random() * 8 + 3; // 减慢进度速度
             if (progress >= 100) {
                 progress = 100;
                 clearInterval(interval);
@@ -203,13 +208,13 @@ class AppIntroManager {
                     if (!this.skipIntroFlag) {
                         this.hideIntroAnimation();
                     }
-                }, 1000);
+                }, 2500); // 增加最终显示时间
             }
             
             if (progressBar) {
                 progressBar.style.width = progress + '%';
             }
-        }, 200);
+        }, 400); // 增加间隔时间
     }
     
     renderIntroBackground(canvas) {

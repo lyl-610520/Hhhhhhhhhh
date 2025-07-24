@@ -352,42 +352,6 @@
     <script src="scripts/main.js"></script>
     <script src="scripts/pwa.js"></script>
     
-    <script>
-        // 应用初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            // 初始化入场动画和PWA指引
-            new AppIntroManager();
-            
-            // 初始化动态背景
-            if (window.DynamicBackgroundRenderer) {
-                window.dynamicBg = new DynamicBackgroundRenderer('dynamic-background-canvas');
-            }
-            
-            // 初始化四季树
-            if (window.SeasonsTreeRenderer) {
-                window.seasonsTree = new SeasonsTreeRenderer('atmosphere-canvas');
-                window.seasonsTree.startAnimation();
-            }
-            
-            // 初始化花朵生成器
-            if (window.FlowerSVGGenerator) {
-                window.flowerGenerator = new FlowerSVGGenerator();
-            }
-            
-            // 响应式处理
-            window.addEventListener('resize', () => {
-                if (window.dynamicBg) window.dynamicBg.resize();
-                if (window.seasonsTree) window.seasonsTree.resize();
-            });
-            
-            // iPad横竖屏切换优化
-            window.addEventListener('orientationchange', () => {
-                setTimeout(() => {
-                    if (window.dynamicBg) window.dynamicBg.resize();
-                    if (window.seasonsTree) window.seasonsTree.resize();
-                }, 100);
-            });
-        });
-    </script>
+
 </body>
 </html>

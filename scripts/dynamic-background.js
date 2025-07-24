@@ -53,7 +53,7 @@ class DynamicBackgroundRenderer {
     
     generateStars() {
         this.stars = [];
-        const starCount = 150;
+        const starCount = 80; // 减少星星数量提升性能
         
         for (let i = 0; i < starCount; i++) {
             this.stars.push({
@@ -70,7 +70,7 @@ class DynamicBackgroundRenderer {
     
     generateClouds() {
         this.clouds = [];
-        const cloudCount = 8;
+        const cloudCount = 5; // 减少云朵数量
         
         for (let i = 0; i < cloudCount; i++) {
             this.clouds.push({
@@ -355,6 +355,11 @@ class DynamicBackgroundRenderer {
             this.updateTime();
             this.lastUpdateTime = currentTime;
         }
+        
+        // 性能优化：降低渲染频率到30FPS
+        if (!this.lastRenderTime) this.lastRenderTime = 0;
+        if (currentTime - this.lastRenderTime < 33) return;
+        this.lastRenderTime = currentTime;
         
         // 清空画布
         this.ctx.clearRect(0, 0, this.width, this.height);

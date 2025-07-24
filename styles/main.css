@@ -2219,4 +2219,25 @@ select:focus-visible {
   height: 100vh;
   z-index: -2;
   pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* 性能优化 */
+* {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+/* 滚动优化 */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  overflow-x: hidden;
+  will-change: scroll-position;
 }
