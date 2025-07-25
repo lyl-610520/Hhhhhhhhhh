@@ -62,6 +62,16 @@ class GrowthCompanionApp {
     console.log('🌤️ 初始化天气...');
     this.initWeather();
     
+    // 初始化动态背景
+    if (window.BackgroundManager) {
+      console.log('🎨 初始化动态背景...');
+      this.backgroundManager = new BackgroundManager();
+    }
+    
+    // 初始化主题
+    console.log('🎨 初始化主题...');
+    this.initTheme();
+    
     // 显示音乐播放器和导航栏
     console.log('🎵 确保UI可见...');
     this.ensureUIVisible();
@@ -78,6 +88,45 @@ class GrowthCompanionApp {
     }, 30 * 60 * 1000);
     
     console.log('🌤️ 当前天气:', this.currentWeather);
+    
+    // 同步天气到背景
+    if (this.backgroundManager) {
+      this.backgroundManager.setWeather(this.currentWeather);
+    }
+  }
+  
+  initTheme() {
+    // 从存储获取主题设置
+    const savedTheme = localStorage.getItem('app-theme') || 'auto';
+    this.currentTheme = savedTheme;
+    this.applyTheme(savedTheme);
+  }
+  
+  applyTheme(theme) {
+    const body = document.body;
+    
+    // 移除现有主题类
+    body.classList.remove('theme-light', 'theme-dark');
+    
+    switch (theme) {
+      case 'light':
+        body.classList.add('theme-light');
+        break;
+      case 'dark':
+        body.classList.add('theme-dark');
+        break;
+      case 'auto':
+      default:
+        // 跟随系统
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          body.classList.add('theme-dark');
+        } else {
+          body.classList.add('theme-light');
+        }
+        break;
+    }
+    
+    console.log('🎨 主题应用:', theme);
   }
   
   ensureUIVisible() {
@@ -270,7 +319,7 @@ class GrowthCompanionApp {
         
         <!-- 快捷打卡 -->
         <div class="card">
-          <h3 class="card-title">快捷打卡</h3>
+          <h3 class="card-title" data-i18n="home.checkin.title">${safeT('home.checkin.title', '快捷打卡')}</h3>
           <div style="display: flex; gap: var(--space-md);">
             <button class="btn btn-primary flex-1" id="wake-up-btn">
               <span>${safeT('home.checkin.wakeUp', '起床')}</span>
@@ -306,7 +355,7 @@ class GrowthCompanionApp {
         
         <!-- 最近记录 -->
         <div class="card">
-          <h3 class="card-title">最近记录</h3>
+          <h3 class="card-title" data-i18n="home.records.title">${safeT('home.records.title', '最近记录')}</h3>
           <div id="recent-records" style="max-height: 200px; overflow-y: auto;">
             <!-- 动态加载 -->
           </div>
@@ -403,6 +452,22 @@ class GrowthCompanionApp {
             </div>
             
             <div>
+              <label style="display: block; margin-bottom: var(--space-sm); font-weight: 500;" data-i18n="settings.theme">${safeT('settings.theme', '主题')}</label>
+              <select id="theme-select" style="width: 100%; padding: var(--space-md); border: 1px solid var(--text-muted); border-radius: var(--radius-md); background: var(--bg-card);">
+                <option value="auto" data-i18n="settings.themeAuto">${safeT('settings.themeAuto', '跟随系统')}</option>
+                <option value="light" data-i18n="settings.themeLight">${safeT('settings.themeLight', '浅色模式')}</option>
+                <option value="dark" data-i18n="settings.themeDark">${safeT('settings.themeDark', '深色模式')}</option>
+              </select>
+            </div>
+            
+            <div>
+              <label style="display: flex; align-items: center; gap: var(--space-sm); font-weight: 500;">
+                <input type="checkbox" id="background-effects-toggle" checked>
+                <span data-i18n="settings.backgroundEffects">${safeT('settings.backgroundEffects', '背景特效')}</span>
+              </label>
+            </div>
+            
+            <div>
               <button class="btn btn-secondary" id="reset-data-btn" style="width: 100%;" data-i18n="settings.reset">
                 ${safeT('settings.reset', '重置数据')}
               </button>
@@ -446,6 +511,8 @@ class GrowthCompanionApp {
   
   bindSettingsEvents() {
     const languageSelect = document.getElementById('language-select');
+    const themeSelect = document.getElementById('theme-select');
+    const backgroundToggle = document.getElementById('background-effects-toggle');
     const resetBtn = document.getElementById('reset-data-btn');
     
     if (languageSelect) {
@@ -460,6 +527,44 @@ class GrowthCompanionApp {
           
           this.showToast(window.I18N ? I18N.t('common.success') : '成功', 'success');
         }
+      });
+    }
+    
+    if (themeSelect) {
+      // 设置当前主题
+      themeSelect.value = this.currentTheme || 'auto';
+      
+      themeSelect.addEventListener('change', (e) => {
+        const newTheme = e.target.value;
+        this.currentTheme = newTheme;
+        this.applyTheme(newTheme);
+        localStorage.setItem('app-theme', newTheme);
+        
+        const successText = window.I18N ? I18N.t('common.success') : '成功';
+        this.showToast(successText, 'success');
+      });
+    }
+    
+    if (backgroundToggle) {
+      // 设置当前背景特效状态
+      const backgroundEnabled = localStorage.getItem('background-effects') !== 'false';
+      backgroundToggle.checked = backgroundEnabled;
+      
+      backgroundToggle.addEventListener('change', (e) => {
+        const enabled = e.target.checked;
+        localStorage.setItem('background-effects', enabled);
+        
+        if (this.backgroundManager) {
+          const bgContainer = document.getElementById('dynamic-bg');
+          if (bgContainer) {
+            bgContainer.style.display = enabled ? 'block' : 'none';
+          }
+        }
+        
+        const message = enabled ? 
+          (window.I18N ? I18N.t('settings.backgroundEffects') : '背景特效') + ' 已开启' :
+          (window.I18N ? I18N.t('settings.backgroundEffects') : '背景特效') + ' 已关闭';
+        this.showToast(message, 'success');
       });
     }
     

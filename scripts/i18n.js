@@ -20,6 +20,17 @@ const I18N = {
       
       // 首页
       home: {
+        checkin: {
+          title: '快捷打卡',
+          wakeUp: '起床',
+          sleep: '睡觉',
+          alreadyWakeUp: '已起床',
+          alreadySleep: '已睡觉'
+        },
+        records: {
+          title: '最近记录',
+          noRecords: '还没有记录'
+        },
         greeting: {
           morning: [
             '早安！新的一天开始了', '晨光正好，开始美好的一天吧', '早上好！愿你今天元气满满',
@@ -102,6 +113,10 @@ const I18N = {
         title: '设置',
         language: '语言',
         theme: '主题',
+        themeAuto: '跟随系统',
+        themeLight: '浅色模式',
+        themeDark: '深色模式',
+        backgroundEffects: '背景特效',
         notifications: '通知',
         reset: '重置数据'
       },
@@ -129,6 +144,17 @@ const I18N = {
       
       // Home page
       home: {
+        checkin: {
+          title: 'Quick Check-in',
+          wakeUp: 'Wake Up',
+          sleep: 'Sleep',
+          alreadyWakeUp: 'Already Awake',
+          alreadySleep: 'Already Slept'
+        },
+        records: {
+          title: 'Recent Records',
+          noRecords: 'No records yet'
+        },
         greeting: {
           morning: [
             'Good morning! A new day begins', 'Morning light is just right, start a beautiful day', 'Good morning! May you be energetic today',
@@ -211,6 +237,10 @@ const I18N = {
         title: 'Settings',
         language: 'Language',
         theme: 'Theme',
+        themeAuto: 'Follow System',
+        themeLight: 'Light Mode',
+        themeDark: 'Dark Mode',
+        backgroundEffects: 'Background Effects',
         notifications: 'Notifications',
         reset: 'Reset Data'
       },
