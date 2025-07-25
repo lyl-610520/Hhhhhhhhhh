@@ -2011,9 +2011,10 @@ class JustInTimeApp {
         
         // 重新处理动态生成的data-i18n元素
         setTimeout(() => {
+            const currentT = i18n[this.currentLanguage]; // 重新获取当前语言的翻译
             document.querySelectorAll('[data-i18n]').forEach(element => {
                 const key = element.getAttribute('data-i18n');
-                const text = this.getNestedValue(t, key);
+                const text = this.getNestedValue(currentT, key);
                 if (text) {
                     element.textContent = text;
                 }
@@ -2059,11 +2060,14 @@ class JustInTimeApp {
             const t = i18n[this.currentLanguage];
             const levelName = this.getNestedValue(t, levelKey) || t.flowerStages.seed;
             levelEl.textContent = levelName;
-            console.log('花朵显示更新:', {
+            console.log('🌸 花朵显示更新:', {
                 level: flower.level,
+                safeLevel,
                 levelKey,
                 levelName,
-                language: this.currentLanguage
+                language: this.currentLanguage,
+                levelKeysArray: CONFIG.flower.levelKeys,
+                i18nFlowerStages: t.flowerStages
             });
         }
         
@@ -2312,6 +2316,14 @@ class JustInTimeApp {
             const achievementName = this.getNestedValue(t, achievement.nameKey) || achievement.nameKey;
             const achievementDesc = this.getAchievementDescription(key, achievement);
             const statusText = isUnlocked ? t.ui.unlocked : t.ui.locked;
+            
+            console.log('🏆 成就更新:', {
+                key,
+                nameKey: achievement.nameKey,
+                achievementName,
+                language: this.currentLanguage,
+                statusText
+            });
             
             achievementEl.innerHTML = `
                 <div class="achievement-icon">${achievement.icon}</div>
