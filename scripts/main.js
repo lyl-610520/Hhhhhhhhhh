@@ -24,7 +24,7 @@ const CONFIG = {
     
     // 花朵成长配置
     flower: {
-        levels: ['种子', '出芽', '小苗', '花骨朵', '开花'],
+        levelKeys: ['flowerStages.seed', 'flowerStages.sprout', 'flowerStages.sapling', 'flowerStages.bud', 'flowerStages.bloom'],
         thresholds: [0, 50, 150, 300, 500], // 每个级别需要的阳光值
         sleepPoints: 15,    // 睡觉打卡获得的阳光值
         generalPoints: 5    // 普通打卡获得的阳光值
@@ -623,10 +623,10 @@ const i18n = {
             },
             flowerStages: {
                 seed: '种子',
-                sprout: '幼苗', 
+                sprout: '幼苗',
+                sapling: '小苗', 
                 bud: '花骨朵',
-                bloom: '盛开',
-                mature: '成熟'
+                bloom: '盛开'
             },
             petGreetings: {
                 morning: ['早上好呀！今天要加油哦！', '新的一天开始了！', '早安，我的朋友！'],
@@ -634,7 +634,11 @@ const i18n = {
             },
             petWelcome: '点击我陪你聊天！',
             myCompanion: '我的伙伴',
-            myFlower: '我的花朵'
+            myFlower: '我的花朵',
+            alreadyWokenUp: '已起床',
+            alreadySlept: '已睡觉',
+            unlocked: '已解锁',
+            locked: '未解锁'
         }
     },
     en: {
@@ -801,9 +805,9 @@ const i18n = {
             flowerStages: {
                 seed: 'Seed',
                 sprout: 'Sprout',
+                sapling: 'Sapling',
                 bud: 'Bud', 
-                bloom: 'Bloom',
-                mature: 'Mature'
+                bloom: 'Bloom'
             },
             petGreetings: {
                 morning: ['Good morning! Let\'s have a great day!', 'A new day begins!', 'Morning, my friend!'],
@@ -811,7 +815,11 @@ const i18n = {
             },
             petWelcome: 'Click me to chat!',
             myCompanion: 'My Companion',
-            myFlower: 'My Flower'
+            myFlower: 'My Flower',
+            alreadyWokenUp: 'Already Awake',
+            alreadySlept: 'Already Slept',
+            unlocked: 'Unlocked',
+            locked: 'Locked'
         }
     }
 };
@@ -1776,7 +1784,8 @@ class JustInTimeApp {
             
             messageArray = messages.sleepMessages[timeCategory];
         } else {
-            messageArray = messages.sleepMessages;
+            const t = i18n[this.currentLanguage];
+            messageArray = [t.ui.toastCheckinSuccess]; // 其他类型的默认消息
         }
         
         const message = messageArray[Math.floor(Math.random() * messageArray.length)];
@@ -1984,13 +1993,23 @@ class JustInTimeApp {
     
     getWeatherDisplay() {
         try {
-            // 这里可以模拟天气或从API获取
-            // 为了演示，我们随机选择一个天气
-            const weatherTypes = ['sunny', 'cloudy', 'rainy'];
-            const currentWeather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+            // 获取当前天气状态（避免随机跳动）
+            if (!this.currentWeatherType) {
+                const weatherTypes = ['sunny', 'cloudy', 'rainy'];
+                this.currentWeatherType = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+                // 设置一个计时器，30分钟后可以改变天气
+                this.weatherChangeTimer = Date.now() + (30 * 60 * 1000);
+            }
+            
+            // 检查是否需要改变天气
+            if (Date.now() > this.weatherChangeTimer) {
+                const weatherTypes = ['sunny', 'cloudy', 'rainy'];
+                this.currentWeatherType = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+                this.weatherChangeTimer = Date.now() + (30 * 60 * 1000);
+            }
             
             const t = i18n[this.currentLanguage];
-            const weatherDesc = t.weather.weatherDesc[currentWeather] || currentWeather;
+            const weatherDesc = t.weather.weatherDesc[this.currentWeatherType] || this.currentWeatherType;
             
             return `${t.weather.currentWeather}${weatherDesc}`;
         } catch (error) {
@@ -2005,7 +2024,10 @@ class JustInTimeApp {
         const svgEl = document.getElementById('flower-svg');
         
         if (levelEl) {
-            levelEl.textContent = CONFIG.flower.levels[flower.level];
+            const levelKey = CONFIG.flower.levelKeys[flower.level] || 'flowerStages.seed';
+            const t = i18n[this.currentLanguage];
+            const levelName = this.getNestedValue(t, levelKey) || t.flowerStages.seed;
+            levelEl.textContent = levelName;
         }
         
         if (progressEl) {
@@ -2106,9 +2128,9 @@ class JustInTimeApp {
             return;
         }
         
-        // 获取所有打卡记录，显示最近3条
+        // 获取所有打卡记录，倒序显示（最新的在前）
         const allCheckins = appState.get('checkins');
-        const recentCheckins = allCheckins.slice(-3).reverse(); // 最近3条，倒序
+        const recentCheckins = allCheckins.slice().reverse(); // 全部记录，倒序
         
         tasksContainer.innerHTML = '';
         
@@ -2170,7 +2192,7 @@ class JustInTimeApp {
             if (todayStatus.wakeUp) {
                 wakeUpBtn.innerHTML = `
                     <span class="btn-icon">✅</span>
-                    <span class="btn-text">已起床</span>
+                    <span class="btn-text" data-i18n="ui.alreadyWokenUp">Already Awake</span>
                 `;
             }
         }
@@ -2180,7 +2202,7 @@ class JustInTimeApp {
             if (todayStatus.sleep) {
                 sleepBtn.innerHTML = `
                     <span class="btn-icon">✅</span>
-                    <span class="btn-text">已睡觉</span>
+                    <span class="btn-text" data-i18n="ui.alreadySlept">Already Slept</span>
                 `;
             }
         }
@@ -2249,14 +2271,19 @@ class JustInTimeApp {
             const achievementEl = document.createElement('div');
             achievementEl.className = 'achievement-item';
             
+            const t = i18n[this.currentLanguage];
+            const achievementName = this.getNestedValue(t, achievement.nameKey) || achievement.nameKey;
+            const achievementDesc = this.getAchievementDescription(key, achievement);
+            const statusText = isUnlocked ? t.ui.unlocked : t.ui.locked;
+            
             achievementEl.innerHTML = `
                 <div class="achievement-icon">${achievement.icon}</div>
                 <div class="achievement-info">
-                    <div class="achievement-name">${achievement.name}</div>
-                    <div class="achievement-desc">${this.getAchievementDescription(key, achievement)}</div>
+                    <div class="achievement-name">${achievementName}</div>
+                    <div class="achievement-desc">${achievementDesc}</div>
                 </div>
                 <div class="achievement-status ${isUnlocked ? 'status-unlocked' : 'status-locked'}">
-                    ${isUnlocked ? '已解锁' : '未解锁'}
+                    ${statusText}
                 </div>
             `;
             
@@ -2266,15 +2293,25 @@ class JustInTimeApp {
     
     getAchievementDescription(key, achievement) {
         const descriptions = {
-            morningBird: `连续${achievement.threshold}天早起`,
-            earlyBird: `${achievement.threshold}次早起打卡`,
-            healthyLife: `连续${achievement.threshold}天健康作息`,
-            studyMaster: `完成${achievement.threshold}次学习打卡`,
-            workHero: `完成${achievement.threshold}次工作打卡`,
-            lifeExpert: `完成${achievement.threshold}次生活打卡`
+            zh: {
+                morningBird: `连续${achievement.threshold}天早起`,
+                earlyBird: `${achievement.threshold}次早起打卡`,
+                healthyLife: `连续${achievement.threshold}天健康作息`,
+                studyMaster: `完成${achievement.threshold}次学习打卡`,
+                workHero: `完成${achievement.threshold}次工作打卡`,
+                lifeExpert: `完成${achievement.threshold}次生活打卡`
+            },
+            en: {
+                morningBird: `Wake up early ${achievement.threshold} days in a row`,
+                earlyBird: `Complete ${achievement.threshold} early wake-up check-ins`,
+                healthyLife: `Maintain healthy routine for ${achievement.threshold} consecutive days`,
+                studyMaster: `Complete ${achievement.threshold} study check-ins`,
+                workHero: `Complete ${achievement.threshold} work check-ins`,
+                lifeExpert: `Complete ${achievement.threshold} life check-ins`
+            }
         };
         
-        return descriptions[key] || '特殊成就';
+        return descriptions[this.currentLanguage]?.[key] || descriptions['zh'][key] || 'Special achievement';
     }
     
     updateStats() {
