@@ -1,114 +1,116 @@
 {
-  "name": "Just in Time - 恰逢其时",
-  "short_name": "Just in Time",
-  "description": "一个美妙的打卡与成长PWA应用，陪伴你的每一个美好时光",
-  "start_url": "./",
+  "name": "成长伙伴 - Growth Companion",
+  "short_name": "成长伙伴",
+  "description": "你的专属成长伙伴，记录每一天的美好时光",
+  "version": "2.0.0",
+  "manifest_version": 1,
+  "start_url": "./index-new.html",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#667eea",
   "orientation": "portrait-primary",
+  "theme_color": "#7C84A3",
+  "background_color": "#F8FAFC",
   "scope": "./",
   "lang": "zh-CN",
-  "categories": ["productivity", "lifestyle", "utilities"],
-  "icons": [
-    {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./icons/icon-192x192.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/icon-512x512.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
+  "dir": "ltr",
+  "categories": ["productivity", "lifestyle", "health"],
   "screenshots": [
     {
-      "src": "/screenshots/desktop.png",
+      "src": "./images/screenshot-mobile.png",
+      "sizes": "320x568",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "./images/screenshot-desktop.png", 
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide"
-    },
-    {
-      "src": "/screenshots/mobile.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow"
     }
   ],
-  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "./icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-96.png",
+      "sizes": "96x96", 
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
   "shortcuts": [
     {
       "name": "快速打卡",
       "short_name": "打卡",
-      "url": "/?action=checkin",
+      "description": "快速记录起床或睡觉",
+      "url": "./index-new.html#checkin",
       "icons": [
         {
-          "src": "/icons/shortcut-checkin.png",
-          "sizes": "192x192"
+          "src": "./icons/shortcut-checkin.png",
+          "sizes": "96x96"
         }
       ]
     },
     {
       "name": "查看统计",
       "short_name": "统计",
-      "url": "/?page=stats",
+      "description": "查看成长数据",
+      "url": "./index-new.html#stats",
       "icons": [
         {
-          "src": "/icons/shortcut-stats.png",
-          "sizes": "192x192"
+          "src": "./icons/shortcut-stats.png",
+          "sizes": "96x96"
         }
       ]
     }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
   ]
 }
