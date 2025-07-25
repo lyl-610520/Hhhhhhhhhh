@@ -26,7 +26,10 @@ class GrowthCompanionApp {
       
       // 加载首页
       console.log('🏠 加载首页...');
-      this.navigateTo('home');
+      // 立即加载，不等待其他初始化
+      setTimeout(() => {
+        this.navigateTo('home');
+      }, 100);
       
       // 启动定时器
       console.log('⏰ 启动定时器...');
@@ -299,6 +302,15 @@ class GrowthCompanionApp {
     
     console.log('📝 首页数据准备完成');
     
+    // 预先计算所有翻译文本
+    const titleCheckin = safeT('home.checkin.title', '快捷打卡');
+    const textWakeUp = safeT('home.checkin.wakeUp', '起床');
+    const textSleep = safeT('home.checkin.sleep', '睡觉');
+    const titleRecords = safeT('home.records.title', '最近记录');
+    const titleCompanion = safeT('home.companion.title', '我的伙伴');
+    const textCompanionWelcome = safeT('home.companion.welcome', '点击我陪你聊天！');
+    const titleFlower = safeT('home.flower.title', '我的花朵');
+    
     return `
       <div class="page">
         <!-- 问候区域 -->
@@ -309,23 +321,23 @@ class GrowthCompanionApp {
           </div>
           <div class="time-display" style="text-align: center; margin-top: 1rem;">
             <div id="current-time" style="font-size: 2rem; font-weight: 600; color: var(--primary);">
-              ${now.toLocaleTimeString(I18N.currentLang === 'zh' ? 'zh-CN' : 'en-US', {hour: '2-digit', minute: '2-digit'})}
+              ${now.toLocaleTimeString((window.I18N && I18N.currentLang === 'en') ? 'en-US' : 'zh-CN', {hour: '2-digit', minute: '2-digit'})}
             </div>
             <div id="current-date" style="font-size: 0.875rem; color: var(--text-secondary);">
-              ${now.toLocaleDateString(I18N.currentLang === 'zh' ? 'zh-CN' : 'en-US')}
+              ${now.toLocaleDateString((window.I18N && I18N.currentLang === 'en') ? 'en-US' : 'zh-CN')}
             </div>
           </div>
         </div>
         
         <!-- 快捷打卡 -->
         <div class="card">
-          <h3 class="card-title" data-i18n="home.checkin.title">${safeT('home.checkin.title', '快捷打卡')}</h3>
+          <h3 class="card-title" data-i18n="home.checkin.title">${titleCheckin}</h3>
           <div style="display: flex; gap: var(--space-md);">
             <button class="btn btn-primary flex-1" id="wake-up-btn">
-              <span>${safeT('home.checkin.wakeUp', '起床')}</span>
+              <span>${textWakeUp}</span>
             </button>
             <button class="btn btn-secondary flex-1" id="sleep-btn">
-              <span>${safeT('home.checkin.sleep', '睡觉')}</span>
+              <span>${textSleep}</span>
             </button>
           </div>
         </div>
@@ -333,17 +345,17 @@ class GrowthCompanionApp {
         <!-- 成长伙伴 -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
           <div class="card">
-            <h3 class="card-title" data-i18n="home.companion.title">${safeT('home.companion.title', '我的伙伴')}</h3>
+            <h3 class="card-title" data-i18n="home.companion.title">${titleCompanion}</h3>
             <div style="text-align: center; padding: var(--space-lg);">
               <div style="font-size: 4rem; margin-bottom: var(--space-md);">🐱</div>
               <div style="font-size: var(--font-sm); color: var(--text-secondary);" data-i18n="home.companion.welcome">
-                ${safeT('home.companion.welcome', '点击我陪你聊天！')}
+                ${textCompanionWelcome}
               </div>
             </div>
           </div>
           
           <div class="card">
-            <h3 class="card-title" data-i18n="home.flower.title">${safeT('home.flower.title', '我的花朵')}</h3>
+            <h3 class="card-title" data-i18n="home.flower.title">${titleFlower}</h3>
             <div style="text-align: center; padding: var(--space-lg);">
               <div style="font-size: 4rem; margin-bottom: var(--space-md);">🌱</div>
               <div id="flower-stage" style="font-size: var(--font-sm); color: var(--text-secondary);">
@@ -355,7 +367,7 @@ class GrowthCompanionApp {
         
         <!-- 最近记录 -->
         <div class="card">
-          <h3 class="card-title" data-i18n="home.records.title">${safeT('home.records.title', '最近记录')}</h3>
+          <h3 class="card-title" data-i18n="home.records.title">${titleRecords}</h3>
           <div id="recent-records" style="max-height: 200px; overflow-y: auto;">
             <!-- 动态加载 -->
           </div>
@@ -708,6 +720,15 @@ function initApp() {
   try {
     window.app = new GrowthCompanionApp();
     console.log('✅ 应用初始化成功');
+    
+    // 强制立即显示首页内容
+    setTimeout(() => {
+      if (window.app && window.app.navigateTo) {
+        console.log('🔄 强制加载首页内容');
+        window.app.navigateTo('home');
+      }
+    }, 200);
+    
   } catch (error) {
     console.error('❌ 应用初始化失败:', error);
     // 显示错误信息
