@@ -1172,7 +1172,7 @@ input, textarea {
 /* 游戏化面板 - 紧凑布局 */
 .gamification-panel {
   display: flex;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
 .pet-container,
@@ -2523,9 +2523,15 @@ body {
   }
   
   #music-player {
+    position: fixed !important;
+    bottom: calc(85px + var(--safe-area-bottom) + 10px) !important;
+    left: var(--spacing-md) !important;
+    right: var(--spacing-md) !important;
+    z-index: 9998 !important;
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
+    height: 75px !important;
   }
 }
 
@@ -2558,6 +2564,18 @@ body {
     max-width: 800px;
     margin: 0 auto;
     gap: var(--spacing-lg);
+  }
+  
+  #music-player {
+    position: fixed !important;
+    bottom: calc(85px + var(--safe-area-bottom) + 10px) !important;
+    left: var(--spacing-md) !important;
+    right: var(--spacing-md) !important;
+    z-index: 9998 !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: 75px !important;
   }
 }
 

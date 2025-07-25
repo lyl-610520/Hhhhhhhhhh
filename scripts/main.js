@@ -638,7 +638,9 @@ const i18n = {
             alreadyWokenUp: '已起床',
             alreadySlept: '已睡觉',
             unlocked: '已解锁',
-            locked: '未解锁'
+            locked: '未解锁',
+            checkinSuccessTitle: '打卡成功！',
+            thanksButton: '谢谢！'
         }
     },
     en: {
@@ -819,7 +821,9 @@ const i18n = {
             alreadyWokenUp: 'Already Awake',
             alreadySlept: 'Already Slept',
             unlocked: 'Unlocked',
-            locked: 'Locked'
+            locked: 'Locked',
+            checkinSuccessTitle: 'Check-in Successful!',
+            thanksButton: 'Thanks!'
         }
     }
 };
@@ -1124,8 +1128,8 @@ class WeatherService {
             }
         }
         
-        // 雪天效果
-        if (weather.code >= 1210 && weather.code <= 1282) {
+        // 雪天效果 - 根据我们的天气类型判断
+        if (this.currentWeatherType === 'snowy' || (weather.code >= 1210 && weather.code <= 1282)) {
             if (preference !== 'no-snow') {
                 this.createSnowEffect(effectsContainer);
             }
@@ -1789,9 +1793,10 @@ class JustInTimeApp {
         }
         
         const message = messageArray[Math.floor(Math.random() * messageArray.length)];
+        const t = i18n[this.currentLanguage];
         
-        this.showModal('打卡成功！', message, [{
-            text: '谢谢！',
+        this.showModal(t.ui.checkinSuccessTitle || '打卡成功！', message, [{
+            text: t.ui.thanksButton || '谢谢！',
             primary: true,
             callback: () => {}
         }]);
@@ -1981,14 +1986,28 @@ class JustInTimeApp {
                       fallbackGreetings['zh'][greetingKey];
         }
         
-        // 获取天气信息
-        const weatherDisplay = this.getWeatherDisplay();
+        // 获取天气信息 - 使用统一的天气状态
+        let weatherDisplay = null;
+        if (this.currentWeatherType) {
+            const t = i18n[this.currentLanguage];
+            const weatherDesc = t.weather.weatherDesc[this.currentWeatherType] || this.currentWeatherType;
+            weatherDisplay = `${t.weather.currentWeather}${weatherDesc}`;
+        }
         
         // 显示问候语和天气
         greetingEl.innerHTML = `
             <div class="greeting-main">${greeting}</div>
             ${weatherDisplay ? `<div class="weather-info">${weatherDisplay}</div>` : ''}
         `;
+        
+        // 更新按钮状态文本
+        this.updateTodayStatus();
+        
+        // 强制更新成就显示
+        this.updateAchievements();
+        
+        // 强制更新花朵显示
+        this.updateFlowerDisplay();
     }
     
     getWeatherDisplay() {
@@ -2028,6 +2047,12 @@ class JustInTimeApp {
             const t = i18n[this.currentLanguage];
             const levelName = this.getNestedValue(t, levelKey) || t.flowerStages.seed;
             levelEl.textContent = levelName;
+            console.log('花朵显示更新:', {
+                level: flower.level,
+                levelKey,
+                levelName,
+                language: this.currentLanguage
+            });
         }
         
         if (progressEl) {
