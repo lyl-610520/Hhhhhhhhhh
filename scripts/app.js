@@ -15,19 +15,28 @@ class GrowthCompanionApp {
   async init() {
     console.log('🚀 成长伙伴 PWA 启动中...');
     
-    // 初始化各个系统
-    await this.initSystems();
-    
-    // 设置事件监听
-    this.setupEventListeners();
-    
-    // 加载首页
-    this.navigateTo('home');
-    
-    // 启动定时器
-    this.startTimers();
-    
-    console.log('✅ 应用启动完成');
+    try {
+      // 初始化各个系统
+      console.log('📦 初始化系统...');
+      await this.initSystems();
+      
+      // 设置事件监听
+      console.log('🔧 设置事件监听...');
+      this.setupEventListeners();
+      
+      // 加载首页
+      console.log('🏠 加载首页...');
+      this.navigateTo('home');
+      
+      // 启动定时器
+      console.log('⏰ 启动定时器...');
+      this.startTimers();
+      
+      console.log('✅ 应用启动完成');
+    } catch (error) {
+      console.error('❌ 应用启动失败:', error);
+      throw error;
+    }
   }
   
   async initSystems() {
@@ -131,35 +140,64 @@ class GrowthCompanionApp {
   }
   
   loadPageContent(page) {
+    console.log('📄 加载页面内容:', page);
     const mainContent = document.getElementById('main-content');
-    if (!mainContent) return;
+    if (!mainContent) {
+      console.error('❌ 找不到 main-content 元素');
+      return;
+    }
     
     let content = '';
     
-    switch (page) {
-      case 'home':
-        content = this.getHomePageContent();
-        break;
-      case 'stats':
-        content = this.getStatsPageContent();
-        break;
-      case 'growth':
-        content = this.getGrowthPageContent();
-        break;
-      case 'settings':
-        content = this.getSettingsPageContent();
-        break;
-      default:
-        content = this.getHomePageContent();
+    try {
+      switch (page) {
+        case 'home':
+          console.log('🏠 生成首页内容...');
+          content = this.getHomePageContent();
+          break;
+        case 'stats':
+          console.log('📊 生成统计页内容...');
+          content = this.getStatsPageContent();
+          break;
+        case 'growth':
+          console.log('🌱 生成成长页内容...');
+          content = this.getGrowthPageContent();
+          break;
+        case 'settings':
+          console.log('⚙️ 生成设置页内容...');
+          content = this.getSettingsPageContent();
+          break;
+        default:
+          console.log('🏠 默认加载首页内容...');
+          content = this.getHomePageContent();
+      }
+      
+      console.log('📝 设置HTML内容...');
+      mainContent.innerHTML = content;
+      
+      // 重新应用国际化
+      if (window.I18N) {
+        console.log('🌍 应用国际化...');
+        I18N.updateDOM();
+      }
+      
+      // 绑定页面特定事件
+      console.log('🔗 绑定页面事件...');
+      this.bindPageEvents(page);
+      
+      console.log('✅ 页面内容加载完成');
+    } catch (error) {
+      console.error('❌ 加载页面内容失败:', error);
+      mainContent.innerHTML = `
+        <div class="page">
+          <div class="card">
+            <h2 style="color: red;">页面加载错误</h2>
+            <p>${error.message}</p>
+            <button onclick="location.reload()" class="btn btn-primary">重新加载</button>
+          </div>
+        </div>
+      `;
     }
-    
-    mainContent.innerHTML = content;
-    
-    // 重新应用国际化
-    I18N.updateDOM();
-    
-    // 绑定页面特定事件
-    this.bindPageEvents(page);
   }
   
   getHomePageContent() {
@@ -511,10 +549,36 @@ class GrowthCompanionApp {
 }
 
 // 启动应用
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   console.log('🌱 成长伙伴 PWA 初始化...');
-  window.app = new GrowthCompanionApp();
-});
+  try {
+    window.app = new GrowthCompanionApp();
+    console.log('✅ 应用初始化成功');
+  } catch (error) {
+    console.error('❌ 应用初始化失败:', error);
+    // 显示错误信息
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.innerHTML = `
+        <div class="page">
+          <div class="card">
+            <h2 style="color: red;">初始化错误</h2>
+            <p>应用初始化失败: ${error.message}</p>
+            <button onclick="location.reload()" class="btn btn-primary">重新加载</button>
+          </div>
+        </div>
+      `;
+    }
+  }
+}
+
+// 确保DOM和所有脚本都加载完成后再初始化
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  // DOM已经加载完成
+  setTimeout(initApp, 100);
+}
 
 // 全局样式补充
 const additionalStyles = `

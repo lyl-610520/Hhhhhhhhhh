@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>调试版本 - 成长伙伴</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="./styles/app.css">
+    
+    <style>
+        /* 调试样式 */
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 10000;
+        }
+        
+        #main-content {
+            background: rgba(0, 255, 0, 0.1) !important;
+            border: 2px solid red !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-info">
+        调试信息：<span id="debug-status">开始加载...</span>
+    </div>
+    
+    <!-- 应用容器 -->
+    <div id="app" class="app-container">
+        
+        <!-- 主内容区 -->
+        <main id="main-content" class="main-content">
+            <div class="page">
+                <div class="card">
+                    <h1>调试模式</h1>
+                    <p>如果你能看到这个，说明HTML和CSS正常</p>
+                    <button onclick="testFunction()" class="btn btn-primary">测试按钮</button>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 音乐播放器 -->
+        <div id="music-player" class="music-player">
+            <div class="music-info">
+                <span id="music-title">Debug Music</span>
+            </div>
+            <div class="music-controls">
+                <button id="play-pause-btn" class="control-btn">⏸️</button>
+                <button id="next-btn" class="control-btn">⏭️</button>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav id="bottom-nav" class="bottom-nav">
+            <button class="nav-btn active" data-page="home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">首页</span>
+            </button>
+            <button class="nav-btn" data-page="stats">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">统计</span>
+            </button>
+            <button class="nav-btn" data-page="growth">
+                <span class="nav-icon">🌱</span>
+                <span class="nav-label">成长</span>
+            </button>
+            <button class="nav-btn" data-page="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">设置</span>
+            </button>
+        </nav>
+        
+    </div>
+    
+    <script>
+        document.getElementById('debug-status').textContent = 'HTML加载完成';
+        
+        function testFunction() {
+            alert('按钮点击正常！');
+        }
+        
+        console.log('🔍 调试：开始加载脚本');
+        
+        // 测试i18n加载
+        const script1 = document.createElement('script');
+        script1.src = './scripts/i18n.js';
+        script1.onload = () => {
+            console.log('✅ i18n.js 加载成功');
+            document.getElementById('debug-status').textContent = 'i18n.js 加载成功';
+            
+            // 测试storage加载
+            const script2 = document.createElement('script');
+            script2.src = './scripts/storage.js';
+            script2.onload = () => {
+                console.log('✅ storage.js 加载成功');
+                document.getElementById('debug-status').textContent = 'storage.js 加载成功';
+                
+                // 测试app加载
+                const script3 = document.createElement('script');
+                script3.src = './scripts/app.js';
+                script3.onload = () => {
+                    console.log('✅ app.js 加载成功');
+                    document.getElementById('debug-status').textContent = '所有脚本加载成功';
+                };
+                script3.onerror = (e) => {
+                    console.error('❌ app.js 加载失败:', e);
+                    document.getElementById('debug-status').textContent = 'app.js 加载失败';
+                };
+                document.head.appendChild(script3);
+            };
+            script2.onerror = (e) => {
+                console.error('❌ storage.js 加载失败:', e);
+                document.getElementById('debug-status').textContent = 'storage.js 加载失败';
+            };
+            document.head.appendChild(script2);
+        };
+        script1.onerror = (e) => {
+            console.error('❌ i18n.js 加载失败:', e);
+            document.getElementById('debug-status').textContent = 'i18n.js 加载失败';
+        };
+        document.head.appendChild(script1);
+    </script>
+</body>
+</html>
