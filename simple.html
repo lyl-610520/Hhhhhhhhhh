@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>成长伙伴 - 简化版</title>
+    <link rel="stylesheet" href="./styles/app.css">
+</head>
+<body>
+    <!-- 应用容器 -->
+    <div id="app" class="app-container">
+        
+        <!-- 主内容区 -->
+        <main id="main-content" class="main-content">
+            <div class="page">
+                <div class="card">
+                    <h1>🌱 成长伙伴</h1>
+                    <p>简化版本测试</p>
+                    
+                    <div class="card">
+                        <h3>当前时间</h3>
+                        <div id="current-time" style="font-size: 2rem; font-weight: 600; color: var(--primary); text-align: center;">
+                            --:--
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>快捷打卡</h3>
+                        <div style="display: flex; gap: var(--space-md);">
+                            <button class="btn btn-primary flex-1" onclick="showToast('起床打卡成功！')">
+                                起床
+                            </button>
+                            <button class="btn btn-secondary flex-1" onclick="showToast('睡觉打卡成功！')">
+                                睡觉
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+                        <div class="card">
+                            <h3>我的伙伴</h3>
+                            <div style="text-align: center; padding: var(--space-lg);">
+                                <div style="font-size: 4rem; margin-bottom: var(--space-md);">🐱</div>
+                                <div style="font-size: var(--font-sm); color: var(--text-secondary);">
+                                    点击我陪你聊天！
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>我的花朵</h3>
+                            <div style="text-align: center; padding: var(--space-lg);">
+                                <div style="font-size: 4rem; margin-bottom: var(--space-md);">🌱</div>
+                                <div style="font-size: var(--font-sm); color: var(--text-secondary);">
+                                    种子
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- 音乐播放器 -->
+        <div id="music-player" class="music-player">
+            <div class="music-info">
+                <span id="music-title">轻松音乐</span>
+            </div>
+            <div class="music-controls">
+                <button id="play-pause-btn" class="control-btn" onclick="toggleMusic()">⏸️</button>
+                <button id="next-btn" class="control-btn" onclick="showToast('下一首')">⏭️</button>
+            </div>
+        </div>
+        
+        <!-- 底部导航 -->
+        <nav id="bottom-nav" class="bottom-nav">
+            <button class="nav-btn active" onclick="switchTab(this, 'home')">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">首页</span>
+            </button>
+            <button class="nav-btn" onclick="switchTab(this, 'stats')">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">统计</span>
+            </button>
+            <button class="nav-btn" onclick="switchTab(this, 'growth')">
+                <span class="nav-icon">🌱</span>
+                <span class="nav-label">成长</span>
+            </button>
+            <button class="nav-btn" onclick="switchTab(this, 'settings')">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">设置</span>
+            </button>
+        </nav>
+        
+    </div>
+    
+    <!-- 通知容器 -->
+    <div id="toast-container" class="toast-container"></div>
+    
+    <script>
+        // 简单的功能实现
+        function updateTime() {
+            const now = new Date();
+            const timeEl = document.getElementById('current-time');
+            if (timeEl) {
+                timeEl.textContent = now.toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'});
+            }
+        }
+        
+        function toggleMusic() {
+            const btn = document.getElementById('play-pause-btn');
+            if (btn) {
+                const isPlaying = btn.textContent === '⏸️';
+                btn.textContent = isPlaying ? '▶️' : '⏸️';
+                showToast(isPlaying ? '音乐暂停' : '音乐播放');
+            }
+        }
+        
+        function switchTab(button, page) {
+            // 移除所有active类
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            // 添加active到当前按钮
+            button.classList.add('active');
+            showToast('切换到: ' + page);
+        }
+        
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+        
+        // 启动应用
+        console.log('🌱 简化版成长伙伴启动');
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // 显示启动成功消息
+        setTimeout(() => {
+            showToast('🎉 应用启动成功！');
+        }, 500);
+    </script>
+    
+    <style>
+        .flex-1 { flex: 1; }
+    </style>
+</body>
+</html>

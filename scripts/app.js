@@ -40,18 +40,30 @@ class GrowthCompanionApp {
   }
   
   async initSystems() {
+    // 确保I18N存在
+    if (!window.I18N) {
+      console.error('❌ I18N未加载');
+      throw new Error('I18N系统未加载');
+    }
+    
     // 初始化国际化
+    console.log('🌍 初始化I18N...');
     I18N.init();
     
     // 初始化存储
     if (window.Storage) {
+      console.log('💾 初始化Storage...');
       await Storage.init();
+    } else {
+      console.warn('⚠️ Storage未加载，使用默认数据');
     }
     
     // 初始化天气
+    console.log('🌤️ 初始化天气...');
     this.initWeather();
     
     // 显示音乐播放器和导航栏
+    console.log('🎵 确保UI可见...');
     this.ensureUIVisible();
   }
   
@@ -201,6 +213,19 @@ class GrowthCompanionApp {
   }
   
   getHomePageContent() {
+    console.log('🏠 开始生成首页内容...');
+    
+    // 安全的I18N调用
+    const safeT = (key, fallback = key) => {
+      if (!window.I18N) return fallback;
+      try {
+        return I18N.t(key);
+      } catch (error) {
+        console.warn('I18N错误:', key, error);
+        return fallback;
+      }
+    };
+    
     const now = new Date();
     const hour = now.getHours();
     let greetingKey = 'morning';
@@ -210,17 +235,20 @@ class GrowthCompanionApp {
     else if (hour >= 18 && hour < 22) greetingKey = 'evening';
     else if (hour >= 22 || hour < 6) greetingKey = 'night';
     
-    const greeting = I18N.t(`home.greeting.${greetingKey}`);
+    const greeting = safeT(`home.greeting.${greetingKey}`, '你好！');
     const greetingText = Array.isArray(greeting) 
       ? greeting[Math.floor(Math.random() * greeting.length)]
       : greeting;
     
-    const weatherText = `${I18N.t('home.weather.current')}${I18N.t(`home.weather.${this.currentWeather}`)}`;
+    const weatherText = `${safeT('home.weather.current', '当前天气是')}${safeT(`home.weather.${this.currentWeather}`, '晴朗')}`;
     
     // 获取用户数据
-    const userData = Storage ? Storage.get('userData') : {};
+    const userData = window.Storage ? Storage.get('userData') : {};
     const flowerLevel = userData.flowerLevel || 0;
-    const flowerStage = I18N.t(`home.flower.stages.${['seed', 'sprout', 'sapling', 'bud', 'bloom'][flowerLevel]}`);
+    const flowerStages = ['seed', 'sprout', 'sapling', 'bud', 'bloom'];
+    const flowerStage = safeT(`home.flower.stages.${flowerStages[flowerLevel]}`, '种子');
+    
+    console.log('📝 首页数据准备完成');
     
     return `
       <div class="page">
@@ -245,10 +273,10 @@ class GrowthCompanionApp {
           <h3 class="card-title">快捷打卡</h3>
           <div style="display: flex; gap: var(--space-md);">
             <button class="btn btn-primary flex-1" id="wake-up-btn">
-              <span>${I18N.t('home.checkin.wakeUp')}</span>
+              <span>${safeT('home.checkin.wakeUp', '起床')}</span>
             </button>
             <button class="btn btn-secondary flex-1" id="sleep-btn">
-              <span>${I18N.t('home.checkin.sleep')}</span>
+              <span>${safeT('home.checkin.sleep', '睡觉')}</span>
             </button>
           </div>
         </div>
@@ -256,17 +284,17 @@ class GrowthCompanionApp {
         <!-- 成长伙伴 -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
           <div class="card">
-            <h3 class="card-title" data-i18n="home.companion.title">${I18N.t('home.companion.title')}</h3>
+            <h3 class="card-title" data-i18n="home.companion.title">${safeT('home.companion.title', '我的伙伴')}</h3>
             <div style="text-align: center; padding: var(--space-lg);">
               <div style="font-size: 4rem; margin-bottom: var(--space-md);">🐱</div>
               <div style="font-size: var(--font-sm); color: var(--text-secondary);" data-i18n="home.companion.welcome">
-                ${I18N.t('home.companion.welcome')}
+                ${safeT('home.companion.welcome', '点击我陪你聊天！')}
               </div>
             </div>
           </div>
           
           <div class="card">
-            <h3 class="card-title" data-i18n="home.flower.title">${I18N.t('home.flower.title')}</h3>
+            <h3 class="card-title" data-i18n="home.flower.title">${safeT('home.flower.title', '我的花朵')}</h3>
             <div style="text-align: center; padding: var(--space-lg);">
               <div style="font-size: 4rem; margin-bottom: var(--space-md);">🌱</div>
               <div id="flower-stage" style="font-size: var(--font-sm); color: var(--text-secondary);">
@@ -288,13 +316,18 @@ class GrowthCompanionApp {
   }
   
   getStatsPageContent() {
+    const safeT = (key, fallback = key) => {
+      if (!window.I18N) return fallback;
+      try { return I18N.t(key); } catch { return fallback; }
+    };
+    
     return `
       <div class="page">
         <div class="card">
-          <h3 class="card-title" data-i18n="stats.title">${I18N.t('stats.title')}</h3>
+          <h3 class="card-title" data-i18n="stats.title">${safeT('stats.title', '数据统计')}</h3>
           <div style="text-align: center; padding: var(--space-xl); color: var(--text-secondary);">
             <div style="font-size: 4rem; margin-bottom: var(--space-md);">📊</div>
-            <div data-i18n="stats.noData">${I18N.t('stats.noData')}</div>
+            <div data-i18n="stats.noData">${safeT('stats.noData', '还没有数据')}</div>
           </div>
         </div>
       </div>
@@ -302,18 +335,23 @@ class GrowthCompanionApp {
   }
   
   getGrowthPageContent() {
+    const safeT = (key, fallback = key) => {
+      if (!window.I18N) return fallback;
+      try { return I18N.t(key); } catch { return fallback; }
+    };
+    
     const achievements = [
-      { key: 'morningBird', icon: '🌅', unlocked: false },
-      { key: 'earlyBird', icon: '🐦', unlocked: false },
-      { key: 'studyMaster', icon: '📚', unlocked: false },
-      { key: 'workHero', icon: '💼', unlocked: false },
-      { key: 'lifeExpert', icon: '🏠', unlocked: false },
-      { key: 'healthyLife', icon: '💪', unlocked: false }
+      { key: 'morningBird', icon: '🌅', unlocked: false, name: '一日之计在于晨' },
+      { key: 'earlyBird', icon: '🐦', unlocked: false, name: '早起的鸟儿有虫吃' },
+      { key: 'studyMaster', icon: '📚', unlocked: false, name: '学习达人' },
+      { key: 'workHero', icon: '💼', unlocked: false, name: '工作英雄' },
+      { key: 'lifeExpert', icon: '🏠', unlocked: false, name: '生活专家' },
+      { key: 'healthyLife', icon: '💪', unlocked: false, name: '健康生活家' }
     ];
     
     const achievementItems = achievements.map(achievement => {
-      const name = I18N.t(`growth.achievements.${achievement.key}`);
-      const status = I18N.t(`growth.achievements.${achievement.unlocked ? 'unlocked' : 'locked'}`);
+      const name = safeT(`growth.achievements.${achievement.key}`, achievement.name);
+      const status = safeT(`growth.achievements.${achievement.unlocked ? 'unlocked' : 'locked'}`, achievement.unlocked ? '已解锁' : '未解锁');
       
       return `
         <div class="achievement-item" style="display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); background: var(--bg-secondary); border-radius: var(--radius-md); ${achievement.unlocked ? '' : 'opacity: 0.6;'}">
@@ -329,10 +367,10 @@ class GrowthCompanionApp {
     return `
       <div class="page">
         <div class="card">
-          <h3 class="card-title" data-i18n="growth.title">${I18N.t('growth.title')}</h3>
+          <h3 class="card-title" data-i18n="growth.title">${safeT('growth.title', '成长历程')}</h3>
           
           <div style="margin-bottom: var(--space-lg);">
-            <h4 data-i18n="growth.achievements.title">${I18N.t('growth.achievements.title')}</h4>
+            <h4 data-i18n="growth.achievements.title">${safeT('growth.achievements.title', '我的成就')}</h4>
             <div style="display: flex; flex-direction: column; gap: var(--space-sm); margin-top: var(--space-md);">
               ${achievementItems}
             </div>
@@ -343,23 +381,30 @@ class GrowthCompanionApp {
   }
   
   getSettingsPageContent() {
+    const safeT = (key, fallback = key) => {
+      if (!window.I18N) return fallback;
+      try { return I18N.t(key); } catch { return fallback; }
+    };
+    
+    const currentLang = window.I18N ? I18N.currentLang : 'zh';
+    
     return `
       <div class="page">
         <div class="card">
-          <h3 class="card-title" data-i18n="settings.title">${I18N.t('settings.title')}</h3>
+          <h3 class="card-title" data-i18n="settings.title">${safeT('settings.title', '设置')}</h3>
           
           <div style="display: flex; flex-direction: column; gap: var(--space-lg);">
             <div>
-              <label style="display: block; margin-bottom: var(--space-sm); font-weight: 500;" data-i18n="settings.language">${I18N.t('settings.language')}</label>
+              <label style="display: block; margin-bottom: var(--space-sm); font-weight: 500;" data-i18n="settings.language">${safeT('settings.language', '语言')}</label>
               <select id="language-select" style="width: 100%; padding: var(--space-md); border: 1px solid var(--text-muted); border-radius: var(--radius-md); background: var(--bg-card);">
-                <option value="zh" ${I18N.currentLang === 'zh' ? 'selected' : ''}>中文</option>
-                <option value="en" ${I18N.currentLang === 'en' ? 'selected' : ''}>English</option>
+                <option value="zh" ${currentLang === 'zh' ? 'selected' : ''}>中文</option>
+                <option value="en" ${currentLang === 'en' ? 'selected' : ''}>English</option>
               </select>
             </div>
             
             <div>
               <button class="btn btn-secondary" id="reset-data-btn" style="width: 100%;" data-i18n="settings.reset">
-                ${I18N.t('settings.reset')}
+                ${safeT('settings.reset', '重置数据')}
               </button>
             </div>
           </div>
@@ -406,23 +451,27 @@ class GrowthCompanionApp {
     if (languageSelect) {
       languageSelect.addEventListener('change', (e) => {
         const newLang = e.target.value;
-        I18N.setLang(newLang);
-        localStorage.setItem('app-language', newLang);
-        
-        // 重新加载当前页面内容
-        this.loadPageContent(this.currentPage);
-        
-        this.showToast(I18N.t('common.success'), 'success');
+        if (window.I18N) {
+          I18N.setLang(newLang);
+          localStorage.setItem('app-language', newLang);
+          
+          // 重新加载当前页面内容
+          this.loadPageContent(this.currentPage);
+          
+          this.showToast(window.I18N ? I18N.t('common.success') : '成功', 'success');
+        }
       });
     }
     
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
-        if (confirm(I18N.t('settings.reset') + '?')) {
-          if (Storage) {
+        const confirmText = window.I18N ? I18N.t('settings.reset') : '重置数据';
+        if (confirm(confirmText + '?')) {
+          if (window.Storage) {
             Storage.clear();
           }
-          this.showToast(I18N.t('common.success'), 'success');
+          const successText = window.I18N ? I18N.t('common.success') : '成功';
+          this.showToast(successText, 'success');
           setTimeout(() => {
             location.reload();
           }, 1000);
@@ -475,12 +524,13 @@ class GrowthCompanionApp {
     };
     
     const messageArray = messages[type][timeCategory];
-    const message = messageArray[I18N.currentLang === 'zh' ? 0 : 1];
+    const isZh = !window.I18N || I18N.currentLang === 'zh';
+    const message = messageArray[isZh ? 0 : 1];
     
     this.showToast(message, 'success');
     
     // 保存记录
-    if (Storage) {
+    if (window.Storage) {
       Storage.saveCheckin(type, new Date());
     }
   }
@@ -492,16 +542,13 @@ class GrowthCompanionApp {
       const dateEl = document.getElementById('current-date');
       
       if (timeEl) {
-        timeEl.textContent = now.toLocaleTimeString(
-          I18N.currentLang === 'zh' ? 'zh-CN' : 'en-US',
-          { hour: '2-digit', minute: '2-digit' }
-        );
+        const locale = (window.I18N && I18N.currentLang === 'en') ? 'en-US' : 'zh-CN';
+        timeEl.textContent = now.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
       }
       
       if (dateEl) {
-        dateEl.textContent = now.toLocaleDateString(
-          I18N.currentLang === 'zh' ? 'zh-CN' : 'en-US'
-        );
+        const locale = (window.I18N && I18N.currentLang === 'en') ? 'en-US' : 'zh-CN';
+        dateEl.textContent = now.toLocaleDateString(locale);
       }
     };
     
@@ -529,7 +576,9 @@ class GrowthCompanionApp {
   
   nextTrack() {
     console.log('🎵 下一首');
-    this.showToast('🎵 ' + (I18N.currentLang === 'zh' ? '下一首' : 'Next track'), 'info');
+    const isZh = !window.I18N || I18N.currentLang === 'zh';
+    const message = '🎵 ' + (isZh ? '下一首' : 'Next track');
+    this.showToast(message, 'info');
   }
   
   showToast(message, type = 'info') {
