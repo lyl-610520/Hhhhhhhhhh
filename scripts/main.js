@@ -1988,6 +1988,13 @@ class JustInTimeApp {
         
         // 获取天气信息 - 使用统一的天气状态
         let weatherDisplay = null;
+        if (!this.currentWeatherType) {
+            // 初始化天气类型
+            const weatherTypes = ['sunny', 'cloudy', 'rainy'];
+            this.currentWeatherType = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+            this.weatherChangeTimer = Date.now() + (30 * 60 * 1000);
+        }
+        
         if (this.currentWeatherType) {
             const t = i18n[this.currentLanguage];
             const weatherDesc = t.weather.weatherDesc[this.currentWeatherType] || this.currentWeatherType;
@@ -2008,6 +2015,9 @@ class JustInTimeApp {
         
         // 强制更新花朵显示
         this.updateFlowerDisplay();
+        
+        // 强制更新宠物显示
+        this.updatePetDisplay();
         
         // 重新处理动态生成的data-i18n元素
         setTimeout(() => {
