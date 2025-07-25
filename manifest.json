@@ -4,7 +4,7 @@
   "description": "你的专属成长伙伴，记录每一天的美好时光",
   "version": "2.0.0",
   "manifest_version": 1,
-  "start_url": "./index-new.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#7C84A3",
@@ -82,7 +82,7 @@
       "name": "快速打卡",
       "short_name": "打卡",
       "description": "快速记录起床或睡觉",
-      "url": "./index-new.html#checkin",
+      "url": "./index.html#checkin",
       "icons": [
         {
           "src": "./icons/shortcut-checkin.png",
@@ -94,7 +94,7 @@
       "name": "查看统计",
       "short_name": "统计",
       "description": "查看成长数据",
-      "url": "./index-new.html#stats",
+      "url": "./index.html#stats",
       "icons": [
         {
           "src": "./icons/shortcut-stats.png",

@@ -5,7 +5,7 @@
 
 const CACHE_NAME = 'growth-companion-v2.0.0';
 const STATIC_CACHE_URLS = [
-  './index-new.html',
+  './index.html',
   './styles/app.css',
   './scripts/i18n.js',
   './scripts/storage.js',
@@ -101,7 +101,7 @@ self.addEventListener('fetch', event => {
           .catch(() => {
             // 网络失败时，返回离线页面或默认响应
             if (event.request.destination === 'document') {
-              return caches.match('./index-new.html');
+              return caches.match('./index.html');
             }
           });
       })
