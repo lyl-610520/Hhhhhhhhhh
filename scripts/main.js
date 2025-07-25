@@ -2008,6 +2008,17 @@ class JustInTimeApp {
         
         // 强制更新花朵显示
         this.updateFlowerDisplay();
+        
+        // 重新处理动态生成的data-i18n元素
+        setTimeout(() => {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const text = this.getNestedValue(t, key);
+                if (text) {
+                    element.textContent = text;
+                }
+            });
+        }, 100);
     }
     
     getWeatherDisplay() {
@@ -2043,7 +2054,8 @@ class JustInTimeApp {
         const svgEl = document.getElementById('flower-svg');
         
         if (levelEl) {
-            const levelKey = CONFIG.flower.levelKeys[flower.level] || 'flowerStages.seed';
+            const safeLevel = Math.min(flower.level, CONFIG.flower.levelKeys.length - 1);
+            const levelKey = CONFIG.flower.levelKeys[safeLevel] || 'flowerStages.seed';
             const t = i18n[this.currentLanguage];
             const levelName = this.getNestedValue(t, levelKey) || t.flowerStages.seed;
             levelEl.textContent = levelName;
